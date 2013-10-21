@@ -11,6 +11,7 @@ class BasicSimulate:
     current_time = 0
     next_event_time = 0
     ARRIVAL_MEAN = 0.3
+    SERVICE_MEAN = 0.2
 
     def __init__(self):
 
@@ -23,7 +24,8 @@ class BasicSimulate:
     def sim_start(self):
 
         #decide the time at which the first arrival will happen
-        first_arrival_time = random.expovariate(self.ARRIVAL_MEAN)
+        first_arrival_time = self.current_time + random.expovariate(self.ARRIVAL_MEAN)
+        first_service_time = first_arrival_time + random.expovariate(self.SERVICE_MEAN)
         #create a customer which will arrive first
         cust = self.create_customer()
         #cust.print_customer()
@@ -33,8 +35,12 @@ class BasicSimulate:
         #Now create an event with this customer and add it to the timeline
 
         event = Event(cust, EventType.ARRIVAL, first_arrival_time)
-        heappush(self.timeline, (self.current_time, event))
+        heappush(self.timeline, (first_arrival_time, event))
+
+        event = Event(cust, EventType.SERVICE_FINISH, first_service_time)
+        heappush(self.timeline, (first_service_time, event))
         #Inserting tuple at the moment
+
         
 
 
@@ -57,9 +63,21 @@ class BasicSimulate:
         processes them'''
 
         while(len(self.timeline) > 0):
-            print self.current_time
-            self.current_time, next_event = heappop(self.timeline)
-            next_event.event_details()
+            (self.current_time, next_event) = heappop(self.timeline)
+            print 'Event : ', self.current_time, EventType.name(next_event.event_type)
+            if(next_event.event_type == EventType.ARRIVAL):
+                self.handle_arrival()
+
+            elif(next_event.event_type == EventType.SERVICE_FINISH):
+                self.handle_service_finish()
+    
+    def handle_arrival(self):
+
+        print 'ARRIVAL HANDLING TODO'
+
+    def handle_service_finish(self):
+
+        print 'SERVICE FINISH HANDLING TODO'
 
 
 
