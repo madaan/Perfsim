@@ -12,6 +12,7 @@ class BasicSimulate:
     next_event_time = 0
     ARRIVAL_MEAN = 0.3
     customer_pool = {}
+
     def __init__(self):
         self.timeline = [] #to be used as a heap or a priority queue
         self.sim_start()
@@ -20,7 +21,7 @@ class BasicSimulate:
     def sim_start(self):
 
         #decide the time at which the first arrival will happen
-        arrival = random.expovariate(self.ARRIVAL_MEAN)
+        first_arrival_time = random.expovariate(self.ARRIVAL_MEAN)
         #create a customer which will arrive first
         cust = self.create_customer()
         #cust.print_customer()
@@ -29,8 +30,9 @@ class BasicSimulate:
 
         #Now create an event with this customer and add it to the timeline
 
-        event = Event(cust, EventType.ARRIVAL, self.current_time)
-        heappush(self.timeline, event)
+        event = Event(cust, EventType.ARRIVAL, first_arrival_time)
+        heappush(self.timeline, (cust.cust_id, event))
+        #Inserting tuple at the moment
         
 
 
