@@ -1,17 +1,19 @@
 #sg
 
-import event
+from eventtype import EventType
 from customer import Customer
+from event import Event
 import random
+from heapq import *
 
 class BasicSimulate:
 
-    time = 0
+    current_time = 0
     next_event_time = 0
     ARRIVAL_MEAN = 0.3
     customer_pool = {}
     def __init__(self):
-        self.Timeline = [] #to be used as a heap or a priority queue
+        self.timeline = [] #to be used as a heap or a priority queue
         self.sim_start()
         
 
@@ -23,8 +25,12 @@ class BasicSimulate:
         cust = self.create_customer()
         #cust.print_customer()
         #Add the customer to pool
-
         BasicSimulate.customer_pool[cust.cust_id] = cust
+
+        #Now create an event with this customer and add it to the timeline
+
+        event = Event(cust, EventType.ARRIVAL, self.current_time)
+        heappush(self.timeline, event)
         
 
 
