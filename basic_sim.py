@@ -4,6 +4,8 @@ from customer import Customer
 from event import Event
 import random
 from heapq import *
+from Queue import *
+
 
 class BasicSimulate:
 
@@ -14,11 +16,12 @@ class BasicSimulate:
 
     def __init__(self):
 
-        self.customer_pool = {} #should be a class variable, saving typing
-        self.timeline = [] #to be used as a heap or a priority queue
+        self.customer_pool = {}  #should be a class variable, saving typing
+        self.timeline = []  #to be used as a heap or a priority queue
+        
+        self.service_queue = Queue(0)  #infinite queue
         self.sim_start()
         self.timeline_processor()
-        
 
     def sim_start(self):
 
@@ -29,7 +32,6 @@ class BasicSimulate:
         cust = self.create_customer()
         #cust.print_customer()
         #Add the customer to pool
-        self.customer_pool[cust.cust_id] = cust
 
         #Now create an event with this customer and add it to the timeline
 
@@ -40,13 +42,10 @@ class BasicSimulate:
         heappush(self.timeline, (first_service_time, event))
         #Inserting tuple at the moment
 
-        
 
-
-
-    '''Creates a random customer to be inserted into the pool'''
     def create_customer(self):
-
+    
+        '''Creates a random customer to be inserted into the pool'''
         job_arr = [0] * Customer.NUM_JOBS
         while(sum(job_arr) == 0): #atleast 1 job
             for i in range(0, Customer.NUM_JOBS):
@@ -57,23 +56,90 @@ class BasicSimulate:
     
         return Customer(job_arr)
 
+    
     def timeline_processor(self):
+    
         '''the function which pulls out events from the timeline and
         processes them'''
 
-        while(len(self.timeline) > 0):
+        while(len(self.timeline) > 0): 
             (self.current_time, next_event) = heappop(self.timeline)
             print 'Event : ', self.current_time, EventType.name(next_event.event_type)
             if(next_event.event_type == EventType.ARRIVAL):
-                self.handle_arrival()
+                self.handle_arrival(next_event)
 
             elif(next_event.event_type == EventType.SERVICE_FINISH):
-                self.handle_service_finish()
+                self.handle_service_finish(next_event)
     
-    def handle_arrival(self):
-        print 'ARRIVAL HANDLING TODO'
+    
+    def handle_arrival(self, arrive_event):
+    
+                       #Schedule another arrival
 
-    def handle_service_finish(self):
+        #Time of next arrival
+        next_arrival_time = random.expovariate(self.ARRIVAL_MEAN) + self.current_time;
+        
+        #Create the customer that will arrive next
+        next_cust = self.create_customer()
+
+        #create an event with the next customer and arrival time
+        event = Event(next_cust, EventType.ARRIVAL,next_arrival_time)
+        
+        #Push the event to the time line
+        heappush(self.timeline, (next_arrival_time, event))
+
+        #----------------------------------------------------------------
+                    #Process current arrival
+
+        #Get the customer related to the event
+        cust = arrive_event.cust
+        
+        #Add the customer to the customer pool
+        self.customer_pool[cust.cust_id] = cust
+        
+        #TODO : Add this customer to one of the queues
+        #For now, add this customer to the only service queue that is present
+        self.add_to_queue(self.service_queue, cust)
+            
+    def add_to_queue(self, Q, cust):
+
+        '''Adds the customer to the specified Q'''
+        Q.put(cust)
+        if(Q.qsize() == 1):
+            #We also need to schedule a departure now, becuase the waiting time of this process 
+            #will be zero. Otherwise, the deaparture will be scheduled when a process is removed
+            service_finish_time = self.current_time + random.expovariate(self.SERVICE_MEAN)
+            event = Event(cust, EventType.SERVICE_FINISH, service_finish_time)
+            heappush(self.timeline, (service_finish_time, event))
+
+#A departure cannot be scheduled right now because you don't really know how long 
+        #you'll have to wait
+
+    def handle_service_finish(self, finish_event):
+
+        self.remove_from_queue(self.service_queue, finish_event.cust)
+
+    #not directly using self.service_queue in this method because this could have been any queue
+    def remove_from_queue(self, Q, cust):
+
+        '''removes the top most executing process from the queue. Also
+        schedules the next departure'''
+
+        finished_cust = Q.get()
+        print 'Finished :' 
+        finished_cust.print_customer()
+
+        if(Q.qsize() >= 1): #need to schedule a departure
+            #get the next customer
+            next_customer = Q.get()
+            
+            service_finish_time = self.current_time + random.expovariate(self.SERVICE_MEAN)
+            event = Event(next_customer, EventType.SERVICE_FINISH, service_finish_time)
+            heappush(self.timeline, (service_finish_time, event))
+            Q.put(next_customer) #put the customer back
+
+        
+
         print 'SERVICE FINISH HANDLING TODO'
 
 if __name__ == '__main__':
