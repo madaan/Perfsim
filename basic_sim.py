@@ -1,5 +1,4 @@
 #sg
-
 from eventtype import EventType
 from customer import Customer
 from event import Event
@@ -72,17 +71,10 @@ class BasicSimulate:
                 self.handle_service_finish()
     
     def handle_arrival(self):
-
         print 'ARRIVAL HANDLING TODO'
 
     def handle_service_finish(self):
-
         print 'SERVICE FINISH HANDLING TODO'
-
-
-
-
-
 
 if __name__ == '__main__':
     b = BasicSimulate()
