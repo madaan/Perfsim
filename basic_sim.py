@@ -65,7 +65,7 @@ class BasicSimulate:
     
     def timeline_processor(self):
     
-        log_file = open('log', 'wb')
+        #log_file = open('log', 'wb')
         '''the function which pulls out events from the timeline and
         processes them'''
 
@@ -90,10 +90,10 @@ class BasicSimulate:
                 self.handle_service_finish(next_event)
     
             #self.printQ()
-            log_file.write('%d\n' % (self.service_queue.qsize()))
+            #log_file.write('%d\n' % (self.service_queue.qsize()))
             #raw_input('\n\n\n[ENTER] to continue')
 
-        log_file.close()
+        #log_file.close()
             
     
     def handle_arrival(self, arrive_event):
