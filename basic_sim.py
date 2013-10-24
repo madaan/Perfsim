@@ -5,13 +5,15 @@ from event import Event
 import random
 from heapq import *
 from Queue import *
-
-
+from lenplotter import plotQ
+import matplotlib.pyplot as plt
+import time
+import numpy as np
 class BasicSimulate:
 
     current_time = 0
     next_event_time = 0
-    ARRIVAL_RATE = 0.01
+    ARRIVAL_RATE = 0.002
     SERVICE_RATE = 0.2
 
     def __init__(self):
@@ -69,14 +71,24 @@ class BasicSimulate:
         '''the function which pulls out events from the timeline and
         processes them'''
 
+        fig=plt.figure()
+        plt.axis([0,1000,0,200])
+        plt.ion()
+        plt.show()
+        plt.xlabel('Step')
+        plt.ylabel('Number of jobs')
+        plt.title('Number of jobs vs Step')
+
+        qlen = []
         step = 0
-        while(len(self.timeline) > 0 and step < 10000): 
+        while(len(self.timeline) > 0 and step < 1000): 
             
             step = step + 1
+            print 'Finished : ', step
             import os
             os.system('clear')
             
-            self.print_timeline()
+            #self.print_timeline()
             (self.current_time, next_event) = heappop(self.timeline)
             print '\nTime  : %f \n' % self.current_time
             #print 'Event : ', self.current_time, EventType.name(next_event.event_type)
@@ -89,11 +101,24 @@ class BasicSimulate:
                 print 'Processing Service finish'
                 self.handle_service_finish(next_event)
     
+            qlen.append(self.service_queue.qsize())
+            if(step % 5 == 0):
+                x = np.array([i for i in range(0, len(qlen))])
+                plt.text(730, 200,'Q length : '  + str(self.service_queue.qsize()), style='italic',
+                bbox={'facecolor':'white', 'alpha':0.5, 'pad':10})
+                plt.plot(x, qlen)
+                plt.draw()
             #self.printQ()
             #log_file.write('%d\n' % (self.service_queue.qsize()))
             #raw_input('\n\n\n[ENTER] to continue')
 
         #log_file.close()
+
+        x = np.array([i for i in range(0, len(qlen))])
+        #plotQ(qlen)
+        plt.plot(x, qlen)
+        raw_input('.')
+
             
     
     def handle_arrival(self, arrive_event):
