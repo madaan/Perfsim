@@ -11,5 +11,5 @@ class Customer:
     
     def print_customer(self):
         print 'Customer id : %d, Jobs : ' % self.cust_id,
-        print self.jobs
+        print self.jobs,
 

@@ -11,8 +11,8 @@ class BasicSimulate:
 
     current_time = 0
     next_event_time = 0
-    ARRIVAL_MEAN = 0.3
-    SERVICE_MEAN = 0.2
+    ARRIVAL_RATE = 0.01
+    SERVICE_RATE = 0.2
 
     def __init__(self):
 
@@ -26,8 +26,8 @@ class BasicSimulate:
     def sim_start(self):
 
         #decide the time at which the first arrival will happen
-        first_arrival_time = self.current_time + random.expovariate(self.ARRIVAL_MEAN)
-        first_service_time = first_arrival_time + random.expovariate(self.SERVICE_MEAN)
+        first_arrival_time = self.current_time + random.expovariate(self.ARRIVAL_RATE)
+        first_service_time = first_arrival_time + random.expovariate(self.SERVICE_RATE)
         #create a customer which will arrive first
         cust = self.create_customer()
         #cust.print_customer()
@@ -65,11 +65,14 @@ class BasicSimulate:
     
     def timeline_processor(self):
     
+        log_file = open('log', 'wb')
         '''the function which pulls out events from the timeline and
         processes them'''
 
-        while(len(self.timeline) > 0): 
+        step = 0
+        while(len(self.timeline) > 0 and step < 10000): 
             
+            step = step + 1
             import os
             os.system('clear')
             
@@ -84,17 +87,21 @@ class BasicSimulate:
 
             elif(next_event.event_type == EventType.SERVICE_FINISH):
                 print 'Processing Service finish'
-                self.handle_arrival(next_event)
-                #self.handle_service_finish(next_event)
+                self.handle_service_finish(next_event)
     
-            raw_input('\n\n\n[ENTER] to continue')
+            #self.printQ()
+            log_file.write('%d\n' % (self.service_queue.qsize()))
+            #raw_input('\n\n\n[ENTER] to continue')
+
+        log_file.close()
+            
     
     def handle_arrival(self, arrive_event):
     
                        #Schedule another arrival
 
         #Time of next arrival
-        next_arrival_time = random.expovariate(self.ARRIVAL_MEAN) + self.current_time;
+        next_arrival_time = random.expovariate(self.ARRIVAL_RATE) + self.current_time;
         
         #Create the customer that will arrive next
         next_cust = self.create_customer()
@@ -126,7 +133,7 @@ class BasicSimulate:
         if(Q.qsize() == 1):
             #We also need to schedule a departure now, becuase the waiting time of this process 
             #will be zero. Otherwise, the deaparture will be scheduled when a process is removed
-            service_finish_time = self.current_time + random.expovariate(self.SERVICE_MEAN)
+            service_finish_time = self.current_time + random.expovariate(self.SERVICE_RATE)
             event = Event(cust, EventType.SERVICE_FINISH, service_finish_time)
             heappush(self.timeline, (service_finish_time, event))
         '''
@@ -134,6 +141,12 @@ class BasicSimulate:
 #A departure cannot be scheduled right now because you don't really know how long 
         #you'll have to wait
 
+    def printQ(self):
+        
+        print
+        for ele in self.service_queue.queue:
+            print '||  ',ele.cust_id,'  || -> ',
+        print 'X'
     def handle_service_finish(self, finish_event):
 
         self.remove_from_queue(self.service_queue, finish_event.cust)
@@ -144,20 +157,17 @@ class BasicSimulate:
         '''removes the top most executing process from the queue. Also
         schedules the next departure'''
 
-        finished_cust = Q.get()
-        #finished_cust.print_customer()
+        Q.get()
 
-        print 'remaining in queue  ', Q.qsize()
         if(Q.qsize() >= 1): #need to schedule a departure
             #get the next customer
-            next_customer = Q.get()
+            next_customer = Q.queue[0]
             
-            service_finish_time = self.current_time + random.expovariate(self.SERVICE_MEAN)
+            service_finish_time = self.current_time + random.expovariate(self.SERVICE_RATE)
             event = Event(next_customer, EventType.SERVICE_FINISH, service_finish_time)
             heappush(self.timeline, (service_finish_time, event))
-            Q.put(next_customer) #put the customer back
 
-        if(Q.qsize() == 0):  #need to schedule an arrival
+        if(Q.qsize() == 0):  #need to schedule an arrival and dept
             print 'Queue Empty'
             self.sim_start()
 
