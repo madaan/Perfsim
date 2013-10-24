@@ -38,7 +38,6 @@ class BasicSimulate:
         event = Event(cust, EventType.ARRIVAL, first_arrival_time)
         heappush(self.timeline, (first_arrival_time, event))
 
-        print first_arrival_time, first_service_time
         event = Event(cust, EventType.SERVICE_FINISH, first_service_time)
         heappush(self.timeline, (first_service_time, event))
         #Inserting tuple at the moment
@@ -57,29 +56,38 @@ class BasicSimulate:
     
         return Customer(job_arr)
 
+    def print_timeline(self):
+        print
+        for (time,event) in self.timeline:
+            print '(%f, %s) -> ' % (time, EventType.name(event.event_type)),
+        print 'X'
+            
     
     def timeline_processor(self):
     
         '''the function which pulls out events from the timeline and
         processes them'''
 
-        step = 0
         while(len(self.timeline) > 0): 
             
-            print 'STEP : %d' % step
-            print 'Time  : %d \n' % self.current_time
-            print 'Timeline : ', self.timeline
-            step = step + 1
+            import os
+            os.system('clear')
+            
+            self.print_timeline()
             (self.current_time, next_event) = heappop(self.timeline)
+            print '\nTime  : %f \n' % self.current_time
             #print 'Event : ', self.current_time, EventType.name(next_event.event_type)
+            print
             if(next_event.event_type == EventType.ARRIVAL):
-                print 'Arrival'
+                print 'Processing Arrival'
                 self.handle_arrival(next_event)
 
             elif(next_event.event_type == EventType.SERVICE_FINISH):
-                print 'Service finish'
-                self.handle_service_finish(next_event)
+                print 'Processing Service finish'
+                self.handle_arrival(next_event)
+                #self.handle_service_finish(next_event)
     
+            raw_input('\n\n\n[ENTER] to continue')
     
     def handle_arrival(self, arrive_event):
     
@@ -150,7 +158,7 @@ class BasicSimulate:
             Q.put(next_customer) #put the customer back
 
         if(Q.qsize() == 0):  #need to schedule an arrival
-            print 'here, ich ben frei'
+            print 'Queue Empty'
             self.sim_start()
 
         
