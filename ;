@@ -63,15 +63,13 @@ class BasicSimulate:
         '''the function which pulls out events from the timeline and
         processes them'''
 
-        step = 0
         while(len(self.timeline) > 0): 
+            print len(self.timeline)
             
-            print 'STEP : %d' % step
-            print 'Time  : %d \n' % self.current_time
-            print 'Timeline : ', self.timeline
-            step = step + 1
             (self.current_time, next_event) = heappop(self.timeline)
             #print 'Event : ', self.current_time, EventType.name(next_event.event_type)
+            print 'Time  : %d \n' % self.current_time
+            raw_input('press any key to continue')
             if(next_event.event_type == EventType.ARRIVAL):
                 print 'Arrival'
                 self.handle_arrival(next_event)
@@ -114,14 +112,12 @@ class BasicSimulate:
 
         '''Adds the customer to the specified Q'''
         Q.put(cust)
-        '''
         if(Q.qsize() == 1):
             #We also need to schedule a departure now, becuase the waiting time of this process 
             #will be zero. Otherwise, the deaparture will be scheduled when a process is removed
             service_finish_time = self.current_time + random.expovariate(self.SERVICE_MEAN)
             event = Event(cust, EventType.SERVICE_FINISH, service_finish_time)
             heappush(self.timeline, (service_finish_time, event))
-        '''
 
 #A departure cannot be scheduled right now because you don't really know how long 
         #you'll have to wait

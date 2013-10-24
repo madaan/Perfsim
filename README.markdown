@@ -15,3 +15,11 @@
     
     
  
+Imple notes :
+
+1. timeline is a heap which stores event tuples.
+2. event tuple : (timestamp, event object)
+
+Scheduling departure : 
+
+The departure will be scheduled either during adding if the process being added is the only process. Otherwise, a departure will be scheduled every time there is a departure.
