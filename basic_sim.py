@@ -7,14 +7,14 @@ from heapq import *
 from Queue import *
 from lenplotter import plotQ
 import matplotlib.pyplot as plt
-import time
 import numpy as np
+
 class BasicSimulate:
 
     current_time = 0
     next_event_time = 0
     ARRIVAL_RATE = .020      #lambda
-    SERVICE_RATE = .20        #mu
+    SERVICE_RATE = .50        #mu
 
     def __init__(self):
         '''The constructor'''
@@ -61,7 +61,7 @@ class BasicSimulate:
             
 
     def timeline_processor(self):
-        '''the function which pulls out events from the timeline and processes them'''
+        '''The function which pulls out events from the timeline and processes them'''
 
         #log_file = open('log', 'wb')
         '''
@@ -79,24 +79,24 @@ class BasicSimulate:
         qlen = []
         
         step = 0
-        while(len(self.timeline) > 0 and step < 1500): 
+        while(len(self.timeline) > 0 and step < 25000): 
             
             step = step + 1
             print 'Finished : ', step
-            import os
-            os.system('clear')
+            #import os
+            #os.system('clear')
             
-            self.print_timeline()
+            #self.print_timeline()
             (self.current_time, next_event) = heappop(self.timeline)
-            print '\nTime  : %f \n' % self.current_time
+            #print '\nTime  : %f \n' % self.current_time
             #print 'Event : ', self.current_time, EventType.name(next_event.event_type)
             print
             if(next_event.event_type == EventType.ARRIVAL):
-                print 'After Processing Arrival :\n'
+                #print 'After Processing Arrival :\n'
                 self.handle_arrival(next_event)
 
             elif(next_event.event_type == EventType.SERVICE_FINISH):
-                print 'After Processing Service finish :\n'
+                #print 'After Processing Service finish :\n'
                 self.handle_service_finish(next_event)
             #Code to plot the queue length with steps
 
@@ -110,7 +110,8 @@ class BasicSimulate:
                 plt.plot(x, qlen)
                 plt.draw()
             '''
-            self.printQ()
+            #self.printQ()
+            #self.print_timeline()
             #log_file.write('%d\n' % (self.service_queue.qsize()))
             #raw_input('\n\n\n[ENTER] to continue')
 
@@ -127,7 +128,9 @@ class BasicSimulate:
         raw_input('.')
             
         '''
-        print 'Average queue length = %d' % (sum(qlen) / len(qlen))
+
+
+        print 'Average queue length = %f' % (float(sum(qlen)) / len(qlen))
 
 
 
@@ -198,8 +201,7 @@ class BasicSimulate:
 
     def remove_from_queue(self, Q, cust):
 
-        '''removes the top most executing process from the queue. Also
-        schedules the next departure'''
+        '''Removes the top most executing process from the queue. Also schedules the next departure'''
 
         Q.get()
 
@@ -214,7 +216,15 @@ class BasicSimulate:
 
         if(Q.qsize() == 0):  #need to schedule an arrival and dept
             print 'Queue Empty'
-            self.sim_start()
+            if(len(self.timeline) == 0):
+                self.sim_start()
+            else: #now logically we have an arrival pending, a departure cannot be pending with empty queue. Schedule departure for the arrival
+                #We need to do it since the next arrival will also face a 0 waiting time
+                (time_arrival, event) = self.timeline[0] #heap :)
+                print time_arrival
+                self.create_finish_event(time_arrival, event.cust)
+
+
 
 
 
@@ -236,11 +246,12 @@ class BasicSimulate:
     def create_finish_event(self, time_from, customer):
 
         '''Put a departure event given the parameters on the timeline and return the event time'''
-        service_finish_time = time_from + random.expovariate(self.SERVICE_RATE)
+        service_finish_time = float(time_from) + random.expovariate(self.SERVICE_RATE)
         event =  Event(customer, EventType.SERVICE_FINISH, service_finish_time)
         heappush(self.timeline, (service_finish_time, event))
         
         return service_finish_time
+
 
 
 
