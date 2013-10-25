@@ -13,8 +13,8 @@ class BasicSimulate:
 
     current_time = 0
     next_event_time = 0
-    ARRIVAL_RATE = 0.002
-    SERVICE_RATE = 0.2
+    ARRIVAL_RATE = .020      #lambda
+    SERVICE_RATE = .20        #mu
 
     def __init__(self):
 
@@ -71,8 +71,11 @@ class BasicSimulate:
         '''the function which pulls out events from the timeline and
         processes them'''
 
+        #'''
+        #Code to plot the queue length with steps
+        
         fig=plt.figure()
-        plt.axis([0,1000,0,200])
+        plt.axis([0,10000,0,1000])
         plt.ion()
         plt.show()
         plt.xlabel('Step')
@@ -80,8 +83,9 @@ class BasicSimulate:
         plt.title('Number of jobs vs Step')
 
         qlen = []
+        #'''
         step = 0
-        while(len(self.timeline) > 0 and step < 1000): 
+        while(len(self.timeline) > 0 and step < 15000): 
             
             step = step + 1
             print 'Finished : ', step
@@ -101,8 +105,10 @@ class BasicSimulate:
                 print 'Processing Service finish'
                 self.handle_service_finish(next_event)
     
+            #Code to plot the queue length with steps
+
             qlen.append(self.service_queue.qsize())
-            if(step % 5 == 0):
+            if(step % 1000 == 0):
                 x = np.array([i for i in range(0, len(qlen))])
                 plt.text(730, 200,'Q length : '  + str(self.service_queue.qsize()), style='italic',
                 bbox={'facecolor':'white', 'alpha':0.5, 'pad':10})
@@ -116,9 +122,12 @@ class BasicSimulate:
 
         x = np.array([i for i in range(0, len(qlen))])
         #plotQ(qlen)
-        plt.plot(x, qlen)
-        raw_input('.')
+        plt.text(430, 215,'Average Q length : '  + str(float(sum(qlen)) / len(qlen)), style='italic',
+       bbox={'facecolor':'white', 'alpha':0.5, 'pad':10})
 
+        plt.plot(x, qlen)
+        plt.draw()
+        raw_input('.')
             
     
     def handle_arrival(self, arrive_event):
