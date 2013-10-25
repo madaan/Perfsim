@@ -13,8 +13,8 @@ class BasicSimulate:
 
     current_time = 0
     next_event_time = 0
-    ARRIVAL_RATE = .020      #lambda
-    SERVICE_RATE = .50        #mu
+    ARRIVAL_RATE = .30      #lambda
+    SERVICE_RATE = .31        #mu
 
     def __init__(self):
         '''The constructor'''
@@ -60,6 +60,7 @@ class BasicSimulate:
         print 'X'
             
 
+
     def timeline_processor(self):
         '''The function which pulls out events from the timeline and processes them'''
 
@@ -92,11 +93,11 @@ class BasicSimulate:
             #print 'Event : ', self.current_time, EventType.name(next_event.event_type)
             print
             if(next_event.event_type == EventType.ARRIVAL):
-                #print 'After Processing Arrival :\n'
+                print 'After Processing Arrival :\n'
                 self.handle_arrival(next_event)
 
             elif(next_event.event_type == EventType.SERVICE_FINISH):
-                #print 'After Processing Service finish :\n'
+                print 'After Processing Service finish :\n'
                 self.handle_service_finish(next_event)
             #Code to plot the queue length with steps
 
@@ -159,7 +160,10 @@ class BasicSimulate:
         
         #TODO : Add this customer to one of the queues
         #For now, add this customer to the only service queue that is present
+        #if(self.service_queue.qsize() > 0): #Server is busy?
         self.add_to_queue(self.service_queue, cust)
+        #else:
+         #   pass #won't be added to queue
 
 
 
@@ -199,11 +203,14 @@ class BasicSimulate:
         '''Handle service finish event'''
         self.remove_from_queue(self.service_queue, finish_event.cust)
 
+
     def remove_from_queue(self, Q, cust):
 
         '''Removes the top most executing process from the queue. Also schedules the next departure'''
 
-        Q.get()
+       
+        if(Q.qsize() > 0):
+            Q.get()
 
         if(Q.qsize() >= 1): #need to schedule a departure
             #get the next customer
