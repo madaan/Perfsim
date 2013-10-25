@@ -61,7 +61,7 @@ class BasicSimulate:
     def print_timeline(self):
         print
         for (time,event) in self.timeline:
-            print '(%f, %s) -> ' % (time, EventType.name(event.event_type)),
+            print '(%f, %s) <- ' % (time, EventType.name(event.event_type)),
         print 'X'
             
     
@@ -71,7 +71,7 @@ class BasicSimulate:
         '''the function which pulls out events from the timeline and
         processes them'''
 
-        #'''
+        '''
         #Code to plot the queue length with steps
         
         fig=plt.figure()
@@ -83,7 +83,7 @@ class BasicSimulate:
         plt.title('Number of jobs vs Step')
 
         qlen = []
-        #'''
+        '''
         step = 0
         while(len(self.timeline) > 0 and step < 15000): 
             
@@ -92,7 +92,7 @@ class BasicSimulate:
             import os
             os.system('clear')
             
-            #self.print_timeline()
+            self.print_timeline()
             (self.current_time, next_event) = heappop(self.timeline)
             print '\nTime  : %f \n' % self.current_time
             #print 'Event : ', self.current_time, EventType.name(next_event.event_type)
@@ -107,6 +107,7 @@ class BasicSimulate:
     
             #Code to plot the queue length with steps
 
+            '''
             qlen.append(self.service_queue.qsize())
             if(step % 1000 == 0):
                 x = np.array([i for i in range(0, len(qlen))])
@@ -114,12 +115,14 @@ class BasicSimulate:
                 bbox={'facecolor':'white', 'alpha':0.5, 'pad':10})
                 plt.plot(x, qlen)
                 plt.draw()
-            #self.printQ()
+            '''
+            self.printQ()
             #log_file.write('%d\n' % (self.service_queue.qsize()))
-            #raw_input('\n\n\n[ENTER] to continue')
+            raw_input('\n\n\n[ENTER] to continue')
 
         #log_file.close()
 
+        '''
         x = np.array([i for i in range(0, len(qlen))])
         #plotQ(qlen)
         plt.text(430, 215,'Average Q length : '  + str(float(sum(qlen)) / len(qlen)), style='italic',
@@ -129,7 +132,7 @@ class BasicSimulate:
         plt.draw()
         raw_input('.')
             
-    
+        '''
     def handle_arrival(self, arrive_event):
     
                        #Schedule another arrival
@@ -179,7 +182,7 @@ class BasicSimulate:
         
         print
         for ele in self.service_queue.queue:
-            print '||  ',ele.cust_id,'  || -> ',
+            print '||  ',ele.cust_id,'  || <- ',
         print 'X'
     def handle_service_finish(self, finish_event):
 
