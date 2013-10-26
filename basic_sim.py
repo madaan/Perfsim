@@ -13,8 +13,9 @@ class BasicSimulate:
 
     current_time = 0
     next_event_time = 0
-    ARRIVAL_RATE = .30      #lambda
-    SERVICE_RATE = .31        #mu
+    ARRIVAL_RATE = .40      #lambda
+    SERVICE_RATE = .50        #mu
+    SERVER_BUSY = False #This is required to ensure that a process does not enter the queue if there is no one else in the system
 
     def __init__(self):
         '''The constructor'''
@@ -60,7 +61,6 @@ class BasicSimulate:
         print 'X'
             
 
-
     def timeline_processor(self):
         '''The function which pulls out events from the timeline and processes them'''
 
@@ -91,18 +91,19 @@ class BasicSimulate:
             (self.current_time, next_event) = heappop(self.timeline)
             #print '\nTime  : %f \n' % self.current_time
             #print 'Event : ', self.current_time, EventType.name(next_event.event_type)
-            print
+            #print
             if(next_event.event_type == EventType.ARRIVAL):
-                print 'After Processing Arrival :\n'
+                #print 'After Processing Arrival :\n'
                 self.handle_arrival(next_event)
 
             elif(next_event.event_type == EventType.SERVICE_FINISH):
-                print 'After Processing Service finish :\n'
+                #print 'After Processing Service finish :\n'
                 self.handle_service_finish(next_event)
             #Code to plot the queue length with steps
 
             
-            qlen.append(self.service_queue.qsize())
+            l = self.service_queue.qsize()
+            qlen.append(l)
             '''
             if(step % 1000 == 0):
                 x = np.array([i for i in range(0, len(qlen))])
@@ -134,10 +135,6 @@ class BasicSimulate:
         print 'Average queue length = %f' % (float(sum(qlen)) / len(qlen))
 
 
-
-
-
-
     def handle_arrival(self, arrive_event):
         '''Handles the arrival event'''
                        #Schedule another arrival
@@ -161,11 +158,11 @@ class BasicSimulate:
         #TODO : Add this customer to one of the queues
         #For now, add this customer to the only service queue that is present
         #if(self.service_queue.qsize() > 0): #Server is busy?
-        self.add_to_queue(self.service_queue, cust)
-        #else:
+        if(self.SERVER_BUSY):
+            self.add_to_queue(self.service_queue, cust)
+        else:
+            self.SERVER_BUSY = True
          #   pass #won't be added to queue
-
-
 
 
     def add_to_queue(self, Q, cust):
@@ -184,8 +181,6 @@ class BasicSimulate:
         #you'll have to wait
 
 
-
-
     def printQ(self):
         '''Prints the service queue'''
         
@@ -195,13 +190,16 @@ class BasicSimulate:
         print 'X'
 
 
-
-
-
-
     def handle_service_finish(self, finish_event):
         '''Handle service finish event'''
-        self.remove_from_queue(self.service_queue, finish_event.cust)
+        if(self.SERVER_BUSY and self.service_queue.qsize() > 0):
+            self.remove_from_queue(self.service_queue, finish_event.cust)
+        else:
+            if(self.SERVER_BUSY and self.service_queue.qsize() == 0):
+                #But the timeline may have an arrival, so need to schedule dept for that
+                (time_arrival, event) = self.timeline[0] #heap :)
+                self.create_finish_event(time_arrival, event.cust)
+                self.SERVER_BUSY = False
 
 
     def remove_from_queue(self, Q, cust):
@@ -222,18 +220,14 @@ class BasicSimulate:
             #heappush(self.timeline, (service_finish_time, event))
 
         if(Q.qsize() == 0):  #need to schedule an arrival and dept
+            self.SERVER_BUSY = False
             print 'Queue Empty'
             if(len(self.timeline) == 0):
                 self.sim_start()
             else: #now logically we have an arrival pending, a departure cannot be pending with empty queue. Schedule departure for the arrival
                 #We need to do it since the next arrival will also face a 0 waiting time
                 (time_arrival, event) = self.timeline[0] #heap :)
-                print time_arrival
                 self.create_finish_event(time_arrival, event.cust)
-
-
-
-
 
 
     def create_arrival_event(self, time_from, customer):
