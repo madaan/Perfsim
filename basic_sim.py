@@ -10,23 +10,25 @@ import numpy as np
 
 
 class BasicSimulate:
-	current_time = 0
-	next_event_time = 0
-	ARRIVAL_RATE = .40      #lambda
-	SERVICE_RATE = .50        #mu
-	SERVER_BUSY = False #This is required to ensure that a process does not enter the queue if there is no one else in the system
 
-	def __init__(self):
-		'''The constructor'''
+    current_time = 0
+    next_event_time = 0
+    ARRIVAL_RATE = .40      #lambda
+    SERVICE_RATE = .50        #mu
+    SERVER_BUSY = False #This is required to ensure that a process does not enter the queue if there is no one else in the system
+
+    def __init__(self):
+    
+        '''The constructor'''
         self.customer_pool = {}  #should be a class variable, saving typing
         self.timeline = []  #to be used as a heap or a priority queue
         
         self.service_queue = Queue(0)  #infinite queue
         self.sim_start()
         self.timeline_processor()
-		
-	def sim_start(self):
-		'''Initialize the system when no process is there'''
+        
+    def sim_start(self):
+        '''Initialize the system when no process is there'''
         #decide the time at which the first arrival will happen
         #create a customer which will arrive first
         cust = self.create_customer()
@@ -41,8 +43,10 @@ class BasicSimulate:
         #heappush(self.timelinec, (first_service_time, event))
         #Inserting tuple at the moment
 
-	def create_customer(self):
-		'''Creates a random customer to be inserted into the pool'''
+
+    def create_customer(self):
+
+        '''Creates a random customer to be inserted into the pool'''
         job_arr = [0] * Customer.NUM_JOBS
         while(sum(job_arr) == 0): #atleast 1 job
             for i in range(0, Customer.NUM_JOBS):
@@ -51,7 +55,8 @@ class BasicSimulate:
                 else:
                     job_arr[i] = 0
 					
-		return Customer(job_arr)
+
+        return Customer(job_arr)
 
 	def print_timeline(self):
 		'''A function to print the timeline'''
@@ -61,8 +66,8 @@ class BasicSimulate:
         print 'X'
             
 
-	def timeline_processor(self):
-		'''The function which pulls out events from the timeline and processes them'''
+    def timeline_processor(self):
+        '''The function which pulls out events from the timeline and processes them'''
 
         #log_file = open('log', 'wb')
         '''
@@ -135,11 +140,10 @@ class BasicSimulate:
         print 'Average queue length = %f' % (float(sum(qlen)) / len(qlen))
 
 
-	def handle_arrival(self, arrive_event):
-		'''Handles the arrival event'''
+    def handle_arrival(self, arrive_event):
+        '''Handles the arrival event'''
 
                        #Schedule another arrival
-
         #Create the customer that will arrive next
         next_cust = self.create_customer() #random customer
 
@@ -163,8 +167,8 @@ class BasicSimulate:
             self.SERVER_BUSY = True
 
 
-	def add_to_queue(self, Q, cust):
-		'''Add customer to given service queue'''
+    def add_to_queue(self, Q, cust):
+        '''Add customer to given service queue'''
 
         Q.put(cust)
         #A departure cannot be scheduled right now because you don't really know how long you'll have to wait
@@ -179,8 +183,8 @@ class BasicSimulate:
         print 'X'
 
 
-	def handle_service_finish(self, finish_event):
-		'''Handle service finish event'''
+    def handle_service_finish(self, finish_event):
+        '''Handle service finish event'''
 
         self.remove_from_queue(self.service_queue)
 
@@ -203,16 +207,15 @@ class BasicSimulate:
                 self.create_finish_event(time_arrival, event.cust)
 
 
-	def remove_from_queue(self, Q):
+    def remove_from_queue(self, Q):
 
-		'''Removes the top most executing process from the queue. Also schedules the next departure'''
+        '''Removes the top most executing process from the queue. Also schedules the next departure'''
        
         if(Q.qsize() > 0):
             Q.get()
 
-	def create_arrival_event(self, time_from, customer):
-		'''Put an arrival event given the parameters on the timeline and return the event time'''
-        
+    def create_arrival_event(self, time_from, customer):
+        '''Put an arrival event given the parameters on the timeline and return the event time'''
         #Time of next arrival
         next_arrival_time = random.expovariate(self.ARRIVAL_RATE) + time_from;
         
@@ -224,19 +227,14 @@ class BasicSimulate:
 
         return next_arrival_time
 
-	def create_finish_event(self, time_from, customer):
+    def create_finish_event(self, time_from, customer):
 
-		'''Put a departure event given the parameters on the timeline and return the event time'''
+        '''Put a departure event given the parameters on the timeline and return the event time'''
         service_finish_time = float(time_from) + random.expovariate(self.SERVICE_RATE)
         event =  Event(customer, EventType.SERVICE_FINISH, service_finish_time)
         heappush(self.timeline, (service_finish_time, event))
         
         return service_finish_time
-
-
-
-
-
 
 
 if __name__ == '__main__':
