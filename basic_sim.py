@@ -5,7 +5,6 @@ from event import Event
 import random
 from heapq import *
 from Queue import *
-from lenplotter import plotQ
 import matplotlib.pyplot as plt
 import numpy as np
 
