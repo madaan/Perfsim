@@ -5,7 +5,6 @@ from event import Event
 import random
 from heapq import *
 from Queue import *
-from lenplotter import plotQ
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -137,6 +136,7 @@ class BasicSimulate:
 
     def handle_arrival(self, arrive_event):
         '''Handles the arrival event'''
+
                        #Schedule another arrival
 
         #Create the customer that will arrive next
@@ -144,7 +144,6 @@ class BasicSimulate:
 
         self.create_arrival_event(self.current_time, next_cust)
 
-                #Push the event to the time line
 
         #----------------------------------------------------------------
                     #Process current arrival
@@ -157,28 +156,17 @@ class BasicSimulate:
         
         #TODO : Add this customer to one of the queues
         #For now, add this customer to the only service queue that is present
-        #if(self.service_queue.qsize() > 0): #Server is busy?
-        if(self.SERVER_BUSY):
+        if(self.SERVER_BUSY): 
             self.add_to_queue(self.service_queue, cust)
-        else:
+        else: #No need to add to queue, but should mark the server as busy
             self.SERVER_BUSY = True
-         #   pass #won't be added to queue
 
 
     def add_to_queue(self, Q, cust):
+        '''Add customer to given service queue'''
 
-        '''Adds the customer to the specified Q'''
         Q.put(cust)
-        '''
-        if(Q.qsize() == 1):
-            #We also need to schedule a departure now, becuase the waiting time of this process 
-            #will be zero. Otherwise, the deaparture will be scheduled when a process is removed
-            service_finish_time = self.current_time + random.expovariate(self.SERVICE_RATE)
-            event = Event(cust, EventType.SERVICE_FINISH, service_finish_time)
-            heappush(self.timeline, (service_finish_time, event))
-        '''
-        #A departure cannot be scheduled right now because you don't really know how long 
-        #you'll have to wait
+        #A departure cannot be scheduled right now because you don't really know how long you'll have to wait
 
 
     def printQ(self):
@@ -190,45 +178,37 @@ class BasicSimulate:
         print 'X'
 
 
+
     def handle_service_finish(self, finish_event):
         '''Handle service finish event'''
-        if(self.SERVER_BUSY and self.service_queue.qsize() > 0):
-            self.remove_from_queue(self.service_queue, finish_event.cust)
-        else:
-            if(self.SERVER_BUSY and self.service_queue.qsize() == 0):
-                #But the timeline may have an arrival, so need to schedule dept for that
+
+        self.remove_from_queue(self.service_queue)
+
+        if(self.service_queue.qsize() >= 1): 
+            #need to schedule a departure
+            #get the next customer
+            next_customer = self.service_queue.queue[0]
+            self.create_finish_event(self.current_time, next_customer)
+
+        if(self.service_queue.qsize() == 0):  #need to schedule an arrival and dept
+            self.SERVER_BUSY = False
+            print 'Queue Empty'
+            if(len(self.timeline) == 0): #There is no event
+                self.sim_start()
+
+            else: 
+                #The queue is empty but there is an event on the timeline, thus the event can only be an arrival.
+                #Schedule a departure for the arrival
                 (time_arrival, event) = self.timeline[0] #heap :)
                 self.create_finish_event(time_arrival, event.cust)
-                self.SERVER_BUSY = False
 
 
-    def remove_from_queue(self, Q, cust):
+    def remove_from_queue(self, Q):
 
         '''Removes the top most executing process from the queue. Also schedules the next departure'''
-
        
         if(Q.qsize() > 0):
             Q.get()
-
-        if(Q.qsize() >= 1): #need to schedule a departure
-            #get the next customer
-            next_customer = Q.queue[0]
-            
-            print 'scheduling a departure at :', self.create_finish_event(self.current_time, next_customer)
-            #service_finish_time = self.current_time + random.expovariate(self.SERVICE_RATE)
-            #event = Event(next_customer, EventType.SERVICE_FINISH, service_finish_time)
-            #heappush(self.timeline, (service_finish_time, event))
-
-        if(Q.qsize() == 0):  #need to schedule an arrival and dept
-            self.SERVER_BUSY = False
-            print 'Queue Empty'
-            if(len(self.timeline) == 0):
-                self.sim_start()
-            else: #now logically we have an arrival pending, a departure cannot be pending with empty queue. Schedule departure for the arrival
-                #We need to do it since the next arrival will also face a 0 waiting time
-                (time_arrival, event) = self.timeline[0] #heap :)
-                self.create_finish_event(time_arrival, event.cust)
-
 
     def create_arrival_event(self, time_from, customer):
         '''Put an arrival event given the parameters on the timeline and return the event time'''
