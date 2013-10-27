@@ -12,7 +12,7 @@ class BasicSimulate:
 
     current_time = 0
     next_event_time = 0
-    ARRIVAL_RATE = .40      #lambda
+    ARRIVAL_RATE = .200      #lambda
     SERVICE_RATE = .50        #mu
     SERVER_BUSY = False #This is required to ensure that a process does not enter the queue if there is no one else in the system
 
