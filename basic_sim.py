@@ -7,7 +7,7 @@ from heapq import *
 from Queue import *
 #import matplotlib.pyplot as plt
 import numpy as np
-
+waittimeDict={} # for storing the waiting time of the customers
 
 class BasicSimulate:
 
@@ -36,7 +36,7 @@ class BasicSimulate:
         #Add the customer to pool
 
 
-        #Now create an event with this customer and add it to the timeline
+        #Now create an event with this customer< and add it to the timeline
         atime = self.create_arrival_event(self.current_time, cust)
         #heappush(self.timeline, (first_arrival_time, event))
 
@@ -103,10 +103,12 @@ class BasicSimulate:
             if(next_event.event_type == EventType.ARRIVAL):
                 #print 'After Processing Arrival :\n'
                 self.handle_arrival(next_event)
-
+				
+				
             elif(next_event.event_type == EventType.SERVICE_FINISH):
                 #print 'After Processing Service finish :\n'
-                self.handle_service_finish(next_event)
+				self.handle_service_finish(next_event)
+				waittimeDict[next_event.cust.cust_id] = next_event.cust.Servstarttime - next_event.cust.Arrivaltime
             #Code to plot the queue length with steps
 
 
@@ -226,16 +228,18 @@ class BasicSimulate:
         next_arrival_time = random.expovariate(self.ARRIVAL_RATE) + time_from;
 
 
-        #create an event with the next customer and arrival time
+		#create an event with the next customer and arrival timeline
+        customer.Arrivaltime = next_arrival_time
         event =  Event(customer, EventType.ARRIVAL,next_arrival_time)
-
-		heappush(self.timeline, (next_arrival_time, event))
-		return next_arrival_time
+        heappush(self.timeline, (next_arrival_time, event))
+        return next_arrival_time
 
     def create_finish_event(self, time_from, customer):
 
         '''Put a departure event given the parameters on the timeline and return the event time'''
+        customer.Servstarttime = float(time_from)
         service_finish_time = float(time_from) + random.expovariate(self.SERVICE_RATE)
+        customer.Servfinishtime = service_finish_time
         event =  Event(customer, EventType.SERVICE_FINISH, service_finish_time)
         heappush(self.timeline, (service_finish_time, event))
 
