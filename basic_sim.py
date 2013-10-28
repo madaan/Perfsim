@@ -50,7 +50,7 @@ class BasicSimulate:
 
 
     def timeline_processor(self):
-        '''The function which pulls out events from the timeline and processes them'''
+        '''Te function which pulls out events from the timeline and processes them'''
 
         step = 0
         while(len(self.timeline) > 0 and step < 2500): 
@@ -76,7 +76,9 @@ class BasicSimulate:
             self.printQ()
             self.print_timeline() 
             #log_file.write('%d\n' % (self.service_queue.qsize()))
-            #raw_input('\n\n\n[ENTER] to continue')
+            raw_input('\n\n\n[ENTER] to continue')
+            import time
+            time.sleep(.10)
 
     def handle_arrival(self, arrive_event):
         '''Handles the arrival event'''
@@ -87,7 +89,6 @@ class BasicSimulate:
         next_cust = self.create_customer() #random customer
 
         self.create_arrival_event(self.current_time, next_cust)
-
 
         #----------------------------------------------------------------
 			#Process current arrival
@@ -136,17 +137,20 @@ class BasicSimulate:
 
         Q = self.service_queue[qno]
 
-        self.remove_from_queue(Q)
 
         #Mark the bit vector of the customer to reflect the change
 
         cust.jobs[qno] = 0
         
-        print 'Customer : ', cust.print_customer()
+        #print 'Customer : ', cust.print_customer()
         if(sum(cust.jobs) > 0): 
             #not yet done, need to find the next pending job
             next_job = self.get_next_job(cust)
-            self.add_to_queue(self.service_queue[next_job], cust)
+            if(self.SERVER_BUSY[next_job]):
+                self.add_to_queue(self.service_queue[next_job], cust)
+            else:
+                self.SERVER_BUSY[next_job] = True
+                self.create_finish_event(self.current_time, EventType.type_from_num(next_job), cust) 
 
         else:
             pass
@@ -164,6 +168,9 @@ class BasicSimulate:
 
             self.create_finish_event(self.current_time, EventType.type_from_num(next_job), next_customer)
 
+            #Now remove it from the queue and send it to service
+            self.remove_from_queue(Q)
+
         if(Q.qsize() == 0):  #need to schedule an arrival and dept
             self.SERVER_BUSY[qno] = False
             #print 'Queue Empty'
@@ -171,13 +178,15 @@ class BasicSimulate:
                 self.sim_start()
 
             else: 
-                #The queue is empty but there is an event on the timeline, thus the event can only be an arrival.
+                pass
+            '''
+                #The queue is empty but there is an event on the timeline, thus the event can only be an arrival. NOT ANYMORE
                 #Schedule a departure for the arrival
                 (time_arrival, event) = self.timeline[0] #heap :)
                 #Find out what will be the first queue in which the arrival will enter
-                #next_arrival_job_type = self.get_next_job(event.customer)
-                #self.create_finish_event(time_arrival, EventType.type_from_num(next_arrival_job_type), event.customer)
-
+                next_arrival_job_type = self.get_next_job(event.customer)
+                self.create_finish_event(time_arrival, EventType.type_from_num(next_arrival_job_type), event.customer)
+             '''
 
     def remove_from_queue(self, Q):
 
@@ -204,9 +213,9 @@ class BasicSimulate:
         service_finish_time = float(time_from) + random.expovariate(self.SERVICE_RATE)
         #find a job that is yet incomplete
 
-        print 'Created finish'
+        print 'Created finish for ', customer.cust_id
         event =  Event(customer, etype, service_finish_time)
-        heappush(self.timeline, (service_finish_time, event))
+        heappush(self.timeline, (float(service_finish_time), event))
 
         return service_finish_time
 
@@ -233,7 +242,7 @@ class BasicSimulate:
             Q = self.service_queue[i]
             print
             for ele in Q.queue:
-                print '||  ',ele.cust_id,'( ', ele.jobs, ' )  || <- ',
+                print '|| ',ele.cust_id,'(', ele.jobs, ') || <- ',
             print 'X'
 
 
@@ -241,7 +250,7 @@ class BasicSimulate:
         '''A function to print the timeline'''
         print
         for (time,event) in self.timeline:
-            print '(%f, %s) <- ' % (time, EventType.name(event.event_type)),
+            print '(%f, %d, %s, %s) <- ' % (time, event.customer.cust_id, EventType.name(event.event_type), ' '.join(str(event.customer.jobs))),
         print 'X'
 
 
@@ -249,7 +258,7 @@ class BasicSimulate:
 
         '''Creates a random customer to be inserted into the pool'''
         job_arr = [0] * Customer.NUM_JOBS
-        while(sum(job_arr) == 0): #loop till the new customer has atleast 1 job
+        while(sum(job_arr) != 3): #loop till the new customer has atleast 1 job
             for i in range(0, Customer.NUM_JOBS):
                 if(random.random() > 0.5):
                     job_arr[i] = 1
