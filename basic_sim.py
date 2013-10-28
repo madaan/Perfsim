@@ -44,7 +44,7 @@ class BasicSimulate:
         #get the job which he will first need to finish
         next_job = self.get_next_job(cust)
 
-        self.create_finish_event(atime + self.current_time, EventType.type_from_num(next_job), cust)
+        #self.create_finish_event(atime + self.current_time, EventType.type_from_num(next_job), cust)
         #heappush(self.timelinec, (first_service_time, event))
         #Inserting tuple at the moment
 
@@ -76,9 +76,9 @@ class BasicSimulate:
             self.printQ()
             self.print_timeline() 
             #log_file.write('%d\n' % (self.service_queue.qsize()))
-            raw_input('\n\n\n[ENTER] to continue')
+            #raw_input('\n\n\n[ENTER] to continue')
             import time
-            time.sleep(.10)
+            time.sleep(.15)
 
     def handle_arrival(self, arrive_event):
         '''Handles the arrival event'''
@@ -142,7 +142,6 @@ class BasicSimulate:
 
         cust.jobs[qno] = 0
         
-        #print 'Customer : ', cust.print_customer()
         if(sum(cust.jobs) > 0): 
             #not yet done, need to find the next pending job
             next_job = self.get_next_job(cust)
@@ -158,18 +157,6 @@ class BasicSimulate:
 
         #Done handling the current customer
         #The following code handles the customer which is now at the head of hte queue
-
-        if(Q.qsize() >= 1): 
-            #need to schedule a departure
-            #get the next customer
-            next_customer = Q.queue[0]
-            #find out the next job that has to be performed
-            next_job = qno
-
-            self.create_finish_event(self.current_time, EventType.type_from_num(next_job), next_customer)
-
-            #Now remove it from the queue and send it to service
-            self.remove_from_queue(Q)
 
         if(Q.qsize() == 0):  #need to schedule an arrival and dept
             self.SERVER_BUSY[qno] = False
@@ -187,6 +174,18 @@ class BasicSimulate:
                 next_arrival_job_type = self.get_next_job(event.customer)
                 self.create_finish_event(time_arrival, EventType.type_from_num(next_arrival_job_type), event.customer)
              '''
+
+        if(Q.qsize() >= 1): 
+            #need to schedule a departure
+            #get the next customer
+            next_customer = Q.queue[0]
+            #find out the next job that has to be performed
+            next_job = qno
+
+            self.create_finish_event(self.current_time, EventType.type_from_num(next_job), next_customer)
+
+            #Now remove it from the queue and send it to service
+            self.remove_from_queue(Q)
 
     def remove_from_queue(self, Q):
 
@@ -213,7 +212,7 @@ class BasicSimulate:
         service_finish_time = float(time_from) + random.expovariate(self.SERVICE_RATE)
         #find a job that is yet incomplete
 
-        print 'Created finish for ', customer.cust_id
+        #raw_input('>')
         event =  Event(customer, etype, service_finish_time)
         heappush(self.timeline, (float(service_finish_time), event))
 
