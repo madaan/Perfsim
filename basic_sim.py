@@ -17,6 +17,7 @@ class BasicSimulate:
     ARRIVAL_RATE = .40      #lambda
     SERVICE_RATE = .50        #mu
     NUM_QUEUES = 3
+
     def __init__(self):
         '''The constructor'''
         self.customer_pool = {}  #should be a class variable, saving typing
@@ -34,42 +35,18 @@ class BasicSimulate:
         
     def sim_start(self):
         '''Initialize the system when no process is there'''
-        #decide the time at which the first arrival will happen
         #create a customer which will arrive first
         cust = self.create_customer()
-        #cust.print_customer()
-        #Add the customer to pool
 
-
-        #Now create an event with this customer< and add it to the timeline
+        #Now create an event with this customer
         atime = self.create_arrival_event(self.current_time, cust)
-        #heappush(self.timeline, (first_arrival_time, event))
-        next_job = cust.jobs.index(1)
+        
+        #get the job which he will first need to finish
+        next_job = self.get_next_job(cust)
+
         self.create_finish_event(atime + self.current_time, EventType.type_from_num(next_job), cust)
         #heappush(self.timelinec, (first_service_time, event))
         #Inserting tuple at the moment
-
-
-    def create_customer(self):
-
-        '''Creates a random customer to be inserted into the pool'''
-        job_arr = [0] * Customer.NUM_JOBS
-        while(sum(job_arr) == 0): #loop till the new customer has atleast 1 job
-            for i in range(0, Customer.NUM_JOBS):
-                if(random.random() > 0.5):
-                    job_arr[i] = 1
-                else:
-                    job_arr[i] = 0
-
-        return Customer(job_arr)
-
-
-    def print_timeline(self):
-        '''A function to print the timeline'''
-        print
-        for (time,event) in self.timeline:
-            print '(%f, %s) <- ' % (time, EventType.name(event.event_type)),
-        print 'X'
 
 
     def timeline_processor(self):
@@ -99,7 +76,7 @@ class BasicSimulate:
             self.printQ()
             self.print_timeline() 
             #log_file.write('%d\n' % (self.service_queue.qsize()))
-            raw_input('\n\n\n[ENTER] to continue')
+            #raw_input('\n\n\n[ENTER] to continue')
 
     def handle_arrival(self, arrive_event):
         '''Handles the arrival event'''
@@ -121,17 +98,14 @@ class BasicSimulate:
         #Add the customer to the customer pool
         self.customer_pool[cust.cust_id] = cust
 
-        #For now, find the first service that the customer has to perform
         
         #If a job has arrived here, there must be some job pending
-        for i,job in enumerate(cust.jobs):
-            if(job == 1):
-                break
+        job_requested = self.get_next_job(cust)
 
-        if(self.SERVER_BUSY[i]): 
-            self.add_to_queue(self.service_queue[i], cust)
+        if(self.SERVER_BUSY[job_requested]): 
+            self.add_to_queue(self.service_queue[job_requested], cust)
         else: #No need to add to queue, but should mark the server as busy
-            self.SERVER_BUSY[i] = True
+            self.SERVER_BUSY[job_requested] = True
             #self.create_finish_event(self.current_time, EventType.type_from_num(i), 
 
 
@@ -142,24 +116,13 @@ class BasicSimulate:
         #A departure cannot be scheduled right now because you don't really know how long you'll have to wait
 
 
-    def printQ(self):
-        '''Prints the service queue'''
-
-        for i in range(0, self.NUM_QUEUES):
-            print 'Queue', i
-            Q = self.service_queue[i]
-            print
-            for ele in Q.queue:
-                print '||  ',ele.cust_id,'( ', ele.jobs, ' )  || <- ',
-            print 'X'
-
-
     def handle_service_finish(self, finish_event):
         '''Handle service finish event'''
 
         #We now need a way to determine to which queue was the person added
         
         cust = finish_event.customer
+
         etype = finish_event.event_type
 
         qno = 0
@@ -181,19 +144,16 @@ class BasicSimulate:
         print 'Customer : ', cust.print_customer()
         if(sum(cust.jobs) > 0): 
             #not yet done, need to find the next pending job
-            for i,job in enumerate(cust.jobs):
-                print i
-                if(job == 1):
-                    break
-
-            print i
-            self.add_to_queue(self.service_queue[i], cust)
+            next_job = self.get_next_job(cust)
+            self.add_to_queue(self.service_queue[next_job], cust)
 
         else:
             pass
-            #nothing to do, the customer did what he came for.
+            #nothing to do, the customer is done with all the jobs.
 
-        #Done handling the current customer, move on to the next one
+        #Done handling the current customer
+        #The following code handles the customer which is now at the head of hte queue
+
         if(Q.qsize() >= 1): 
             #need to schedule a departure
             #get the next customer
@@ -214,7 +174,7 @@ class BasicSimulate:
                 #Schedule a departure for the arrival
                 (time_arrival, event) = self.timeline[0] #heap :)
                 #Find out what will be the first queue in which the arrival will enter
-                next_arrival_job_type = event.customer.jobs.index(1)
+                next_arrival_job_type = self.get_next_job(event.customer)
                 self.create_finish_event(time_arrival, EventType.type_from_num(next_arrival_job_type), event.customer)
 
 
@@ -251,6 +211,54 @@ class BasicSimulate:
         heappush(self.timeline, (service_finish_time, event))
 
         return service_finish_time
+
+    def get_next_job(self, customer):
+        '''Returns the next queue that a customer should join'''
+        '''Returns -1 if a customer is done'''
+
+        next_job = 0
+        try:
+            next_job = customer.jobs.index(1)
+        
+        except ValueError:
+            next_job = -1
+
+        return next_job
+
+        #Later, the complex scheduling poilicies may be entered here
+
+    def printQ(self):
+        '''Prints the service queue'''
+
+        for i in range(0, self.NUM_QUEUES):
+            print 'Queue', i
+            Q = self.service_queue[i]
+            print
+            for ele in Q.queue:
+                print '||  ',ele.cust_id,'( ', ele.jobs, ' )  || <- ',
+            print 'X'
+
+
+    def print_timeline(self):
+        '''A function to print the timeline'''
+        print
+        for (time,event) in self.timeline:
+            print '(%f, %s) <- ' % (time, EventType.name(event.event_type)),
+        print 'X'
+
+
+    def create_customer(self):
+
+        '''Creates a random customer to be inserted into the pool'''
+        job_arr = [0] * Customer.NUM_JOBS
+        while(sum(job_arr) != 1): #loop till the new customer has atleast 1 job
+            for i in range(0, Customer.NUM_JOBS):
+                if(random.random() > 0.5):
+                    job_arr[i] = 1
+                else:
+                    job_arr[i] = 0
+
+        return Customer(job_arr)
 
 
 if __name__ == '__main__':
