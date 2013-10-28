@@ -108,7 +108,6 @@ class BasicSimulate:
             else : #elif(next_event.event_type == EventType.SERVICE_FINISH_1)
                 print 'After Processing Service finish :\n'
                 self.handle_service_finish(next_event)
-                waittimeDict[next_event.cust.cust_id] = next_event.cust.Servstarttime - next_event.cust.Arrivaltime
             #Code to plot the queue length with steps
 
 
@@ -216,11 +215,11 @@ class BasicSimulate:
         etype = finish_event.event_type
 
         qno = 0
-        if(etype == EventType.SERVICE_FINISH_1):
+        if(etype == EventType.SERVICE_FINISH_0):
             qno = 0
-        elif(etype == EventType.SERVICE_FINISH_2):
+        elif(etype == EventType.SERVICE_FINISH_1):
             qno = 1
-        elif(etype == EventType.SERVICE_FINISH_3):
+        elif(etype == EventType.SERVICE_FINISH_2):
             qno = 2
 
         Q = self.service_queue[qno]
@@ -231,12 +230,15 @@ class BasicSimulate:
 
         cust.jobs[qno] = 0
         
+        print 'Customer : ', cust.print_customer()
         if(sum(cust.jobs) > 0): 
             #not yet done, need to find the next pending job
             for i,job in enumerate(cust.jobs):
+                print i
                 if(job == 1):
                     break
 
+            print i
             self.add_to_queue(self.service_queue[i], cust)
 
         else:
@@ -264,7 +266,9 @@ class BasicSimulate:
                 #The queue is empty but there is an event on the timeline, thus the event can only be an arrival.
                 #Schedule a departure for the arrival
                 (time_arrival, event) = self.timeline[0] #heap :)
-                self.create_finish_event(time_arrival, event.cust)
+                #Find out what will be the first queue in which the arrival will enter
+                next_arrival_job_type = event.customer.jobs.index(1)
+                self.create_finish_event(time_arrival, EventType.type_from_num(next_arrival_job_type), event.customer)
 
 
     def remove_from_queue(self, Q):

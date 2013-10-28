@@ -1,0 +1,21 @@
+##A customer will arrive with a list of jobs to be performed. 
+He will first of all join the queues in the order in which the jobs are listed. After he is done with that task, he will move on to another task. This will go on till all the jobs are done.
+
+##Outline of function handle_arrival : 
+--As always, schedule another arrival with the current arrival. This is required to ensure that the sim does not end.
+
+--Get the job vector, find the first bit that is set. Depending on the set bit, add the job to the required queue. Also set the status of the corresponding server accordingly. 
+
+##Outline of the function handle_service_finish
+
+Part 1 : Process the customer that triggered the event. 
+
+a) First of all, get the queue from which the service has been finished. Pop from the queue, update the job vector to reflect that the job has been finished.
+
+b) See if there are more jobs that the customer has to perform. If yes, need to add this guy to the right queue.
+
+c) Since the queue from which we picked this guy up will start processing the next one instantly, we need to schedule a departure for this queue as well. Also, if this queue is empty, we need to schedule another arrival and a departure, in hope that the arriving customer will have some business for this new queue.
+
+
+If the queue still has customers remaining, we need to schedule a departure for the customer that is up next. 
+

@@ -8,9 +8,9 @@ class Customer:
         self.cust_id = Customer.cust_count + 1
         Customer.cust_count = Customer.cust_count + 1
         self.jobs = jobs
-        self.arrival_time=0
-        self.servstart_time=0
-        self.servfinish_time=0
+        self.Arrivaltime=0
+        self.Servstarttime=0
+        self.Servfinishtime=0
     
     def print_customer(self):
         print 'Customer id : %d, Jobs : ' % self.cust_id,
