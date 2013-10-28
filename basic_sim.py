@@ -250,7 +250,7 @@ class BasicSimulate:
             #get the next customer
             next_customer = self.Q.queue[0]
             #find out the next job that has to be performed
-            next_job = next_customer.jobs.index(1)
+            next_job = qno
 
             self.create_finish_event(self.current_time, EventType.type_from_num(next_job), next_customer)
 
