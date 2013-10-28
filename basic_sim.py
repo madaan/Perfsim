@@ -150,7 +150,7 @@ class BasicSimulate:
             Q = self.service_queue[i]
             print
             for ele in Q.queue:
-                print '||  ',ele.cust_id,'  || <- ',
+                print '||  ',ele.cust_id,'( ', ele.jobs, ' )  || <- ',
             print 'X'
 
 
