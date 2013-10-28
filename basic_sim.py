@@ -106,7 +106,8 @@ class BasicSimulate:
             self.add_to_queue(self.service_queue[job_requested], cust)
         else: #No need to add to queue, but should mark the server as busy
             self.SERVER_BUSY[job_requested] = True
-            #self.create_finish_event(self.current_time, EventType.type_from_num(i), 
+            #since the server is not busy, it will immediately start processing the event
+            self.create_finish_event(self.current_time, EventType.type_from_num(job_requested), cust) 
 
 
     def add_to_queue(self, Q, cust):
@@ -174,8 +175,8 @@ class BasicSimulate:
                 #Schedule a departure for the arrival
                 (time_arrival, event) = self.timeline[0] #heap :)
                 #Find out what will be the first queue in which the arrival will enter
-                next_arrival_job_type = self.get_next_job(event.customer)
-                self.create_finish_event(time_arrival, EventType.type_from_num(next_arrival_job_type), event.customer)
+                #next_arrival_job_type = self.get_next_job(event.customer)
+                #self.create_finish_event(time_arrival, EventType.type_from_num(next_arrival_job_type), event.customer)
 
 
     def remove_from_queue(self, Q):
@@ -193,7 +194,6 @@ class BasicSimulate:
 
 
 		#create an event with the next customer and arrival timeline
-        customer.Arrivaltime = next_arrival_time
         event =  Event(customer, EventType.ARRIVAL,next_arrival_time)
         heappush(self.timeline, (next_arrival_time, event))
         return next_arrival_time
@@ -201,9 +201,7 @@ class BasicSimulate:
     def create_finish_event(self, time_from, etype, customer):
 
         '''Put a departure event given the parameters on the timeline and return the event time'''
-        customer.Servstarttime = float(time_from)
         service_finish_time = float(time_from) + random.expovariate(self.SERVICE_RATE)
-        customer.Servfinishtime = service_finish_time
         #find a job that is yet incomplete
 
         print 'Created finish'
@@ -251,7 +249,7 @@ class BasicSimulate:
 
         '''Creates a random customer to be inserted into the pool'''
         job_arr = [0] * Customer.NUM_JOBS
-        while(sum(job_arr) != 1): #loop till the new customer has atleast 1 job
+        while(sum(job_arr) == 0): #loop till the new customer has atleast 1 job
             for i in range(0, Customer.NUM_JOBS):
                 if(random.random() > 0.5):
                     job_arr[i] = 1
@@ -259,6 +257,7 @@ class BasicSimulate:
                     job_arr[i] = 0
 
         return Customer(job_arr)
+
 
 
 if __name__ == '__main__':
