@@ -8,22 +8,25 @@ from Queue import *
 #import matplotlib.pyplot as plt
 import numpy as np
 
-
 class BasicSimulate:
 
     current_time = 0
     next_event_time = 0
     ARRIVAL_RATE = .40      #lambda
     SERVICE_RATE = .50        #mu
-    SERVER_BUSY = False #This is required to ensure that a process does not enter the queue if there is no one else in the system
-
+    NUM_QUEUES = 3
     def __init__(self):
-    
         '''The constructor'''
         self.customer_pool = {}  #should be a class variable, saving typing
         self.timeline = []  #to be used as a heap or a priority queue
         
-        self.service_queue = Queue(0)  #infinite queue
+
+        self.SERVER_BUSY = [] #This is required to ensure that a process does not enter the queue if there is no one else in the system
+        self.service_queue = []
+        for i in range(0, self.NUM_QUEUES):
+            self.service_queue.append(Queue(0)) #infinite queue
+            self.SERVER_BUSY.append(False)
+
         self.sim_start()
         self.timeline_processor()
         
@@ -36,11 +39,11 @@ class BasicSimulate:
         #Add the customer to pool
 
 
-        #Now create an event with this customer and add it to the timeline
+        #Now create an event with this customer< and add it to the timeline
         atime = self.create_arrival_event(self.current_time, cust)
         #heappush(self.timeline, (first_arrival_time, event))
-
-        self.create_finish_event(atime + self.current_time, cust)
+        next_job = cust.jobs.index(1)
+        self.create_finish_event(atime + self.current_time, EventType.type_from_num(next_job), cust)
         #heappush(self.timelinec, (first_service_time, event))
         #Inserting tuple at the moment
 
@@ -56,13 +59,11 @@ class BasicSimulate:
                 else:
                     job_arr[i] = 0
 
-					
-
         return Customer(job_arr)
 
 
-	def print_timeline(self):
-		'''A function to print the timeline'''
+    def print_timeline(self):
+        '''A function to print the timeline'''
         print
         for (time,event) in self.timeline:
             print '(%f, %s) <- ' % (time, EventType.name(event.event_type)),
@@ -85,33 +86,34 @@ class BasicSimulate:
         plt.title('Number of jobs vs Step')
 
         '''
-        qlen = []
 
         step = 0
-        while(len(self.timeline) > 0 and step < 25000): 
+        while(len(self.timeline) > 0 and step < 2500): 
 
             step = step + 1
             print 'Finished : ', step
-            #import os
-            #os.system('clear')
+            import os
+            os.system('clear')
 
-            #self.print_timeline()
+            self.print_timeline()
             (self.current_time, next_event) = heappop(self.timeline)
-            #print '\nTime  : %f \n' % self.current_time
-            #print 'Event : ', self.current_time, EventType.name(next_event.event_type)
-            #print
+            print '\nTime  : %f \n' % self.current_time
+            print 'Event : ', self.current_time, EventType.name(next_event.event_type)
+            print
             if(next_event.event_type == EventType.ARRIVAL):
-                #print 'After Processing Arrival :\n'
+                print 'After Processing Arrival :\n'
                 self.handle_arrival(next_event)
-
-            elif(next_event.event_type == EventType.SERVICE_FINISH):
-                #print 'After Processing Service finish :\n'
+				
+				
+            else : #elif(next_event.event_type == EventType.SERVICE_FINISH_1)
+                print 'After Processing Service finish :\n'
                 self.handle_service_finish(next_event)
+                waittimeDict[next_event.cust.cust_id] = next_event.cust.Servstarttime - next_event.cust.Arrivaltime
             #Code to plot the queue length with steps
 
 
-            l = self.service_queue.qsize()
-            qlen.append(l)
+            #l = self.service_queue.qsize()
+            #qlen.append(l)
             '''
             if(step % 1000 == 0):
                 x = np.array([i for i in range(0, len(qlen))])
@@ -120,10 +122,10 @@ class BasicSimulate:
                 plt.plot(x, qlen)
                 plt.draw()
             '''
-            #self.printQ()
-            #self.print_timeline()
+            self.printQ()
+            self.print_timeline() 
             #log_file.write('%d\n' % (self.service_queue.qsize()))
-            #raw_input('\n\n\n[ENTER] to continue')
+            raw_input('\n\n\n[ENTER] to continue')
 
         #log_file.close()
 
@@ -159,17 +161,31 @@ class BasicSimulate:
 			#Process current arrival
 
         #Get the customer related to the event
-        cust = arrive_event.cust
+        cust = arrive_event.customer
 
         #Add the customer to the customer pool
         self.customer_pool[cust.cust_id] = cust
 
+        #For now, find the first service that the customer has to perform
+        
+        #If a job has arrived here, there must be some job pending
+        for i,job in enumerate(cust.jobs):
+            if(job == 1):
+                break
+        
+
+
+              
+        
+
+
+
         #TODO : Add this customer to one of the queues
         #For now, add this customer to the only service queue that is present
-        if(self.SERVER_BUSY): 
-            self.add_to_queue(self.service_queue, cust)
+        if(self.SERVER_BUSY[i]): 
+            self.add_to_queue(self.service_queue[i], cust)
         else: #No need to add to queue, but should mark the server as busy
-            self.SERVER_BUSY = True
+            self.SERVER_BUSY[i] = True
 
 
     def add_to_queue(self, Q, cust):
@@ -179,29 +195,68 @@ class BasicSimulate:
         #A departure cannot be scheduled right now because you don't really know how long you'll have to wait
 
 
-	def printQ(self):
-		'''Prints the service queue'''
+    def printQ(self):
+        '''Prints the service queue'''
 
-        print
-        for ele in self.service_queue.queue:
-            print '||  ',ele.cust_id,'  || <- ',
-        print 'X'
+        for i in range(0, self.NUM_QUEUES):
+            print 'Queue', i
+            Q = self.service_queue[i]
+            print
+            for ele in Q.queue:
+                print '||  ',ele.cust_id,'  || <- ',
+            print 'X'
 
 
     def handle_service_finish(self, finish_event):
         '''Handle service finish event'''
 
-        self.remove_from_queue(self.service_queue)
+        #We now need a way to determine to which queue was the person added
+        
+        cust = finish_event.customer
+        etype = finish_event.event_type
 
-        if(self.service_queue.qsize() >= 1): 
+        qno = 0
+        if(etype == EventType.SERVICE_FINISH_1):
+            qno = 0
+        elif(etype == EventType.SERVICE_FINISH_2):
+            qno = 1
+        elif(etype == EventType.SERVICE_FINISH_3):
+            qno = 2
+
+        Q = self.service_queue[qno]
+
+        self.remove_from_queue(Q)
+
+        #Mark the bit vector of the customer to reflect the change
+
+        cust.jobs[qno] = 0
+        
+        if(sum(cust.jobs) > 0): 
+            #not yet done, need to find the next pending job
+            for i,job in enumerate(cust.jobs):
+                if(job == 1):
+                    break
+
+            self.add_to_queue(self.service_queue[i], cust)
+
+        else:
+            pass
+            #nothing to do, the customer did what he came for.
+
+
+
+        if(Q.qsize() >= 1): 
             #need to schedule a departure
             #get the next customer
-            next_customer = self.service_queue.queue[0]
-            self.create_finish_event(self.current_time, next_customer)
+            next_customer = self.Q.queue[0]
+            #find out the next job that has to be performed
+            next_job = next_customer.jobs.index(1)
 
-        if(self.service_queue.qsize() == 0):  #need to schedule an arrival and dept
-            self.SERVER_BUSY = False
-#            print 'Queue Empty'
+            self.create_finish_event(self.current_time, EventType.type_from_num(next_job), next_customer)
+
+        if(Q.qsize() == 0):  #need to schedule an arrival and dept
+            self.SERVER_BUSY[qno] = False
+            #print 'Queue Empty'
             if(len(self.timeline) == 0): #There is no event
                 self.sim_start()
 
@@ -226,17 +281,21 @@ class BasicSimulate:
         next_arrival_time = random.expovariate(self.ARRIVAL_RATE) + time_from;
 
 
-        #create an event with the next customer and arrival time
+		#create an event with the next customer and arrival timeline
+        customer.Arrivaltime = next_arrival_time
         event =  Event(customer, EventType.ARRIVAL,next_arrival_time)
+        heappush(self.timeline, (next_arrival_time, event))
+        return next_arrival_time
 
-		heappush(self.timeline, (next_arrival_time, event))
-		return next_arrival_time
-
-    def create_finish_event(self, time_from, customer):
+    def create_finish_event(self, time_from, etype, customer):
 
         '''Put a departure event given the parameters on the timeline and return the event time'''
+        customer.Servstarttime = float(time_from)
         service_finish_time = float(time_from) + random.expovariate(self.SERVICE_RATE)
-        event =  Event(customer, EventType.SERVICE_FINISH, service_finish_time)
+        customer.Servfinishtime = service_finish_time
+        #find a job that is yet incomplete
+
+        event =  Event(customer, etype, service_finish_time)
         heappush(self.timeline, (service_finish_time, event))
 
         return service_finish_time

@@ -1,2 +1,0 @@
-1. Upon every arrival, schedule another arrival, is it?
-   What other strategies can we use?

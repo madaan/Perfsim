@@ -1,1 +1,0 @@
-1. All the customers who are coming for a particular task will take the same time on average. In other words, time taken to do a job is not dependent on the customer, it depends only on the server.
