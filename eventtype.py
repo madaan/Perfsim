@@ -9,14 +9,13 @@ class EventType:
     
     #NOTE  : Service finish may or may not mean departure
 
-    def type_from_num(self, number):
-        if(number == 0):
-            return EventType.ARRIVAL
-        elif(number == 1):
+    def type_from_num(self, queue_number):
+        #This function will always be called with queue number
+        if(queue_number == 0):
             return EventType.SERVICE_FINISH_0
-        elif(number == 2):
+        elif(queue_number == 1):
             return EventType.SERVICE_FINISH_1
-        elif(number == 3):
+        elif(queue_number == 2):
             return EventType.SERVICE_FINISH_2
 
     def name(self, number):

@@ -8,6 +8,8 @@ from Queue import *
 #import matplotlib.pyplot as plt
 import numpy as np
 
+#TODO : Find next job for the customer should be a function
+
 class BasicSimulate:
 
     current_time = 0
@@ -102,7 +104,6 @@ class BasicSimulate:
     def handle_arrival(self, arrive_event):
         '''Handles the arrival event'''
 
-
                        #Schedule another arrival
 
         #Create the customer that will arrive next
@@ -126,14 +127,12 @@ class BasicSimulate:
         for i,job in enumerate(cust.jobs):
             if(job == 1):
                 break
-        
 
-        #TODO : Add this customer to one of the queues
-        #For now, add this customer to the only service queue that is present
         if(self.SERVER_BUSY[i]): 
             self.add_to_queue(self.service_queue[i], cust)
         else: #No need to add to queue, but should mark the server as busy
             self.SERVER_BUSY[i] = True
+            #self.create_finish_event(self.current_time, EventType.type_from_num(i), 
 
 
     def add_to_queue(self, Q, cust):
