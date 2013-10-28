@@ -76,7 +76,7 @@ class BasicSimulate:
             self.printQ()
             self.print_timeline() 
             #log_file.write('%d\n' % (self.service_queue.qsize()))
-            #raw_input('\n\n\n[ENTER] to continue')
+            raw_input('\n\n\n[ENTER] to continue')
             import time
             time.sleep(.15)
 
@@ -157,7 +157,19 @@ class BasicSimulate:
 
         #Done handling the current customer
         #The following code handles the customer which is now at the head of hte queue
+        if(Q.qsize() >= 1): 
+            #need to schedule a departure
+            #get the next customer
+            next_customer = Q.queue[0]
+            #find out the next job that has to be performed
+            next_job = qno
 
+            self.create_finish_event(self.current_time, EventType.type_from_num(next_job), next_customer)
+
+            #Now remove it from the queue and send it to service
+            self.remove_from_queue(Q)
+
+        #QSize already 0? Can finish here
         if(Q.qsize() == 0):  #need to schedule an arrival and dept
             self.SERVER_BUSY[qno] = False
             #print 'Queue Empty'
@@ -175,17 +187,6 @@ class BasicSimulate:
                 self.create_finish_event(time_arrival, EventType.type_from_num(next_arrival_job_type), event.customer)
              '''
 
-        if(Q.qsize() >= 1): 
-            #need to schedule a departure
-            #get the next customer
-            next_customer = Q.queue[0]
-            #find out the next job that has to be performed
-            next_job = qno
-
-            self.create_finish_event(self.current_time, EventType.type_from_num(next_job), next_customer)
-
-            #Now remove it from the queue and send it to service
-            self.remove_from_queue(Q)
 
     def remove_from_queue(self, Q):
 
@@ -257,7 +258,7 @@ class BasicSimulate:
 
         '''Creates a random customer to be inserted into the pool'''
         job_arr = [0] * Customer.NUM_JOBS
-        while(sum(job_arr) != 3): #loop till the new customer has atleast 1 job
+        while(sum(job_arr) == 0): #loop till the new customer has atleast 1 job
             for i in range(0, Customer.NUM_JOBS):
                 if(random.random() > 0.5):
                     job_arr[i] = 1
