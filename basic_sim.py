@@ -52,9 +52,9 @@ class BasicSimulate:
 
         '''Creates a random customer to be inserted into the pool'''
         job_arr = [0] * Customer.NUM_JOBS
-        while(sum(job_arr) == 0): #atleast 1 job
+        while(sum(job_arr) == 0): #loop till the new customer has atleast 1 job
             for i in range(0, Customer.NUM_JOBS):
-                if(int(random.random() * 10) % 2 == 0):
+                if(random.random() > 0.5):
                     job_arr[i] = 1
                 else:
                     job_arr[i] = 0
@@ -72,20 +72,6 @@ class BasicSimulate:
 
     def timeline_processor(self):
         '''The function which pulls out events from the timeline and processes them'''
-
-        #log_file = open('log', 'wb')
-        '''
-        #Code to plot the queue length with steps
-
-        fig=plt.figure()
-        plt.axis([0,10000,0,1000])
-        plt.ion()
-        plt.show()
-        plt.xlabel('Step')
-        plt.ylabel('Number of jobs')
-        plt.title('Number of jobs vs Step')
-
-        '''
 
         step = 0
         while(len(self.timeline) > 0 and step < 2500): 
@@ -108,41 +94,10 @@ class BasicSimulate:
             else : #elif(next_event.event_type == EventType.SERVICE_FINISH_1)
                 print 'After Processing Service finish :\n'
                 self.handle_service_finish(next_event)
-            #Code to plot the queue length with steps
-
-
-            #l = self.service_queue.qsize()
-            #qlen.append(l)
-            '''
-            if(step % 1000 == 0):
-                x = np.array([i for i in range(0, len(qlen))])
-                plt.text(730, 200,'Q length : '  + str(self.service_queue.qsize()), style='italic',
-                bbox={'facecolor':'white', 'alpha':0.5, 'pad':10})
-                plt.plot(x, qlen)
-                plt.draw()
-            '''
             self.printQ()
             self.print_timeline() 
             #log_file.write('%d\n' % (self.service_queue.qsize()))
             raw_input('\n\n\n[ENTER] to continue')
-
-        #log_file.close()
-
-        '''
-        x = np.array([i for i in range(0, len(qlen))])
-        #plotQ(qlen)
-        plt.text(430, 215,'Average Q length : '  + str(float(sum(qlen)) / len(qlen)), style='italic',
-		bbox={'facecolor':'white', 'alpha':0.5, 'pad':10})
-
-			plt.plot(x, qlen)
-			plt.draw()
-			raw_input('.')
-
-			'''
-
-
-#		print 'Average queue length = %f' % (float(sum(qlen)) / len(qlen))
-
 
     def handle_arrival(self, arrive_event):
         '''Handles the arrival event'''
@@ -172,12 +127,6 @@ class BasicSimulate:
             if(job == 1):
                 break
         
-
-
-              
-        
-
-
 
         #TODO : Add this customer to one of the queues
         #For now, add this customer to the only service queue that is present
@@ -245,12 +194,11 @@ class BasicSimulate:
             pass
             #nothing to do, the customer did what he came for.
 
-
-
+        #Done handling the current customer, move on to the next one
         if(Q.qsize() >= 1): 
             #need to schedule a departure
             #get the next customer
-            next_customer = self.Q.queue[0]
+            next_customer = Q.queue[0]
             #find out the next job that has to be performed
             next_job = qno
 
@@ -299,6 +247,7 @@ class BasicSimulate:
         customer.Servfinishtime = service_finish_time
         #find a job that is yet incomplete
 
+        print 'Created finish'
         event =  Event(customer, etype, service_finish_time)
         heappush(self.timeline, (service_finish_time, event))
 
