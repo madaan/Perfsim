@@ -16,7 +16,7 @@ class BasicSimulate:
     next_event_time = 0
     ARRIVAL_RATE = .40      #lambda
     SERVICE_RATE = .50        #mu
-    NUM_QUEUES = 3
+    NUM_QUEUES = 4
 
     def __init__(self):
         '''The constructor'''
@@ -39,10 +39,10 @@ class BasicSimulate:
         cust = self.create_customer()
 
         #Now create an event with this customer
-        atime = self.create_arrival_event(self.current_time, cust)
+        self.create_arrival_event(self.current_time, cust)
         
         #get the job which he will first need to finish
-        next_job = self.get_next_job(cust)
+        #next_job = self.get_next_job(cust)
 
         #self.create_finish_event(atime + self.current_time, EventType.type_from_num(next_job), cust)
         #heappush(self.timelinec, (first_service_time, event))
@@ -76,7 +76,7 @@ class BasicSimulate:
             self.printQ()
             self.print_timeline() 
             #log_file.write('%d\n' % (self.service_queue.qsize()))
-            raw_input('\n\n\n[ENTER] to continue')
+            #raw_input('\n\n\n[ENTER] to continue')
             import time
             time.sleep(.15)
 
@@ -134,6 +134,8 @@ class BasicSimulate:
             qno = 1
         elif(etype == EventType.SERVICE_FINISH_2):
             qno = 2
+        elif(etype == EventType.SERVICE_FINISH_3):
+            qno = 3
 
         Q = self.service_queue[qno]
 

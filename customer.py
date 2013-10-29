@@ -2,7 +2,7 @@
 class Customer:
 
     cust_count = 0 #count of customers, to be used to create cust_id
-    NUM_JOBS = 3 #Total number of different jobs a customer might have to perform in the bank
+    NUM_JOBS = 4 #Total number of different jobs a customer might have to perform in the bank
 
     def __init__(self, jobs):
         self.cust_id = Customer.cust_count + 1
