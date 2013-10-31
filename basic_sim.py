@@ -7,16 +7,16 @@ from heapq import *
 from Queue import *
 #import matplotlib.pyplot as plt
 import numpy as np
-
+from scheduling import Scheduler
 #TODO : Find next job for the customer should be a function
 
 class BasicSimulate:
 
     current_time = 0
     next_event_time = 0
-    ARRIVAL_RATE = .40      #lambda
+    ARRIVAL_RATE = .19      #lambda
     SERVICE_RATE = .50        #mu
-    NUM_QUEUES = 115
+    NUM_QUEUES = 2
 
     def __init__(self):
         '''The constructor'''
@@ -204,19 +204,9 @@ class BasicSimulate:
         return service_finish_time
 
     def get_next_job(self, customer):
-        '''Returns the next queue that a customer should join'''
-        '''Returns -1 if a customer is done'''
+        '''Calls the correct scheduler, passing the customer and the list of queues in the system. The scheduler can be chosen by the customer by specifying in a config file.'''
 
-        next_job = 0
-        try:
-            next_job = customer.jobs.index(1)
-        
-        except ValueError:
-            next_job = -1
-
-        return next_job
-
-        #Later, the complex scheduling poilicies may be entered here
+        return Scheduler.naive(customer, self.service_queue)
 
     def printQ(self):
         '''Prints the service queue'''

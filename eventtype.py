@@ -2,7 +2,7 @@
 class EventType:
 
     ARRIVAL = -1
-    NUM_QUEUES = 115
+    NUM_QUEUES = 2
     #Silly implementation, find a workaround
     SERVICE_FINISH = []
     for i in range(0, NUM_QUEUES):
