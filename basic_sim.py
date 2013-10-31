@@ -15,8 +15,6 @@ class BasicSimulate:
 
     current_time = 0
     next_event_time = 0
-    ARRIVAL_RATE = .19      #lambda
-    SERVICE_RATE = .50        #mu
     config = Config('perfsim.config')
     def __init__(self):
         '''The constructor'''
@@ -199,7 +197,21 @@ class BasicSimulate:
     def create_finish_event(self, time_from, etype, customer):
 
         '''Put a departure event given the parameters on the timeline and return the event time'''
-        service_finish_time = float(time_from) + random.expovariate(self.SERVICE_RATE)
+        #Decide finish time based
+        # 1. Get the queue
+        qno = EventType.queue_from_event(etype)
+        
+        config_key = 'server_' + str(qno) #get distribution and mean from config
+        dist = self.config.server_config[config_key]['service_dist']
+        dist_rate = float(self.config.server_config[config_key]['service_dist_rate'])
+        
+        service_finish_time = 0 
+        if(dist == 'E'):
+            service_finish_time = float(time_from) + random.expovariate(dist_rate)
+        elif(dist == 'D'):
+            service_finish_time = float(time_from) + dist_rate
+
+
         #find a job that is yet incomplete
 
         #raw_input('>')

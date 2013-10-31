@@ -14,13 +14,12 @@ class Config:
         self.ARRIVAL_DIST = config.get('system', 'ARRIVAL_DIST')
         self.ARRIVAL_DIST_MEAN = config.get('system', 'ARRIVAL_DIST_MEAN')
 
-        serverConfig = {} #A dictionary of dictionaries
+        self.server_config = {} #A dictionary of dictionaries
         for section in config.sections()[1:]: #Skip the system
-            serverConfig[section] = {}
+            self.server_config[section] = {}
             for option in config.options(section):
-                serverConfig[section][option] = config.get(section, option)
-
-
+                self.server_config[section][option] = config.get(section, option)
+        print self.server_config
     
 if __name__ == '__main__':
     Config('perfsim.config')
