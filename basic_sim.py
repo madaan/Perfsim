@@ -249,7 +249,7 @@ class BasicSimulate:
                 else:
                     job_arr[i] = 0
 
-        return Customer(self.NUM_QUEUES, job_arr)
+        return Customer(job_arr)
 
 
 
