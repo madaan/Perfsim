@@ -183,9 +183,13 @@ class BasicSimulate:
     def create_arrival_event(self, time_from, customer):
         '''Put an arrival event given the parameters on the timeline and return the event time'''
 
+        next_arrival_time = float("inf")
         #Time of next arrival
-        next_arrival_time = random.expovariate(self.ARRIVAL_RATE) + time_from;
+        if(self.config.ARRIVAL_DIST == 'E'):
+            next_arrival_time = random.expovariate(self.config.ARRIVAL_DIST_MEAN) + time_from;
 
+        elif(self.config.ARRIVAL_DIST_MEAN == 'D'):
+            next_arrival_time = self.config/ARRIVAL_DIST_MEAN + time_from
 
 		#create an event with the next customer and arrival timeline
         event =  Event(customer, EventType.ARRIVAL,next_arrival_time)
@@ -207,6 +211,8 @@ class BasicSimulate:
     def get_next_job(self, customer):
         '''Calls the correct scheduler, passing the customer and the list of queues in the system. The scheduler can be chosen by the customer by specifying in a config file.'''
 
+        if(sum(customer.jobs) == 0): #
+            return -1
         return Scheduler.smallest_queue_next(customer, self.service_queue)
 
     def printQ(self):

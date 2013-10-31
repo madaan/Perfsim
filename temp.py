@@ -1,11 +1,11 @@
 #sg
 
+import ConfigParser
+config = ConfigParser.ConfigParser()
+config.read('perfsim.config')
+#Read the system parameters :
+self.NUM_SERVER = int(config.get('system', 'NUM_SERVER'))
 
-class X:
-    xx = []
-    for i in range(0, 10):
-        xx.append(i ** .5)
-    
 
 
-print X.xx[8]
+

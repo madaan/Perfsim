@@ -11,7 +11,16 @@ class Config:
         config.read('perfsim.config')
         #Read the system parameters :
         self.NUM_SERVER = int(config.get('system', 'NUM_SERVER'))
+        self.ARRIVAL_DIST = config.get('system', 'ARRIVAL_DIST')
+        self.ARRIVAL_DIST_MEAN = config.get('system', 'ARRIVAL_DIST_MEAN')
+
+        serverConfig = {} #A dictionary of dictionaries
+        for section in config.sections()[1:]: #Skip the system
+            serverConfig[section] = {}
+            for option in config.options(section):
+                serverConfig[section][option] = config.get(section, option)
 
 
+    
 if __name__ == '__main__':
     Config('perfsim.config')
