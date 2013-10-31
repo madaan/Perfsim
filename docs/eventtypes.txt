@@ -1,0 +1,9 @@
+To make the code 
+1. Readable
+2. Expandable and maintainable, we have used enumerations.
+
+The class eventtype.py defines the enumeration and class methods that are defined help working with enumerations. This document describes the event types and associated code.
+
+ARRIVAL => -1
+SERVICE_FINISH => A list of class variables. ith element of this list stores the value i, and is used to signify an event of service finishing from the ith queue. 
+

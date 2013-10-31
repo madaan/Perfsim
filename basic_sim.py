@@ -16,7 +16,7 @@ class BasicSimulate:
     next_event_time = 0
     ARRIVAL_RATE = .40      #lambda
     SERVICE_RATE = .50        #mu
-    NUM_QUEUES = 4
+    NUM_QUEUES = 115
 
     def __init__(self):
         '''The constructor'''
@@ -127,15 +127,8 @@ class BasicSimulate:
 
         etype = finish_event.event_type
 
-        qno = 0
-        if(etype == EventType.SERVICE_FINISH_0):
-            qno = 0
-        elif(etype == EventType.SERVICE_FINISH_1):
-            qno = 1
-        elif(etype == EventType.SERVICE_FINISH_2):
-            qno = 2
-        elif(etype == EventType.SERVICE_FINISH_3):
-            qno = 3
+        qno = EventType.queue_from_event(etype); 
+        #returns the queue number which has caused the event
 
         Q = self.service_queue[qno]
 
@@ -177,17 +170,6 @@ class BasicSimulate:
             #print 'Queue Empty'
             if(len(self.timeline) == 0): #There is no event
                 self.sim_start()
-
-            else: 
-                pass
-            '''
-                #The queue is empty but there is an event on the timeline, thus the event can only be an arrival. NOT ANYMORE
-                #Schedule a departure for the arrival
-                (time_arrival, event) = self.timeline[0] #heap :)
-                #Find out what will be the first queue in which the arrival will enter
-                next_arrival_job_type = self.get_next_job(event.customer)
-                self.create_finish_event(time_arrival, EventType.type_from_num(next_arrival_job_type), event.customer)
-             '''
 
 
     def remove_from_queue(self, Q):
@@ -259,15 +241,15 @@ class BasicSimulate:
     def create_customer(self):
 
         '''Creates a random customer to be inserted into the pool'''
-        job_arr = [0] * Customer.NUM_JOBS
+        job_arr = [0] * self.NUM_QUEUES
         while(sum(job_arr) == 0): #loop till the new customer has atleast 1 job
-            for i in range(0, Customer.NUM_JOBS):
+            for i in range(0, self.NUM_QUEUES):
                 if(random.random() > 0.5):
                     job_arr[i] = 1
                 else:
                     job_arr[i] = 0
 
-        return Customer(job_arr)
+        return Customer(self.NUM_QUEUES, job_arr)
 
 
 
