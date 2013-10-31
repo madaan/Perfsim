@@ -1,11 +1,13 @@
 #sg
+from configuration import Config
 class EventType:
 
     ARRIVAL = -1
-    NUM_QUEUES = 2
     #Silly implementation, find a workaround
     SERVICE_FINISH = []
-    for i in range(0, NUM_QUEUES):
+    config = Config('perfsim.config')
+    NUM_SERVER = config.NUM_SERVER
+    for i in range(0, NUM_SERVER):
         SERVICE_FINISH.append(i)
     #NOTE  : Service finish may or may not mean departure
 

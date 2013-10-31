@@ -9,7 +9,8 @@ class Config:
     def __init__(self, cfile):
         config = ConfigParser.ConfigParser()
         config.read('perfsim.config')
-        print config.sections()
+        #Read the system parameters :
+        self.NUM_SERVER = int(config.get('system', 'NUM_SERVER'))
 
 
 if __name__ == '__main__':

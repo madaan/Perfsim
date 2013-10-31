@@ -8,6 +8,7 @@ from Queue import *
 #import matplotlib.pyplot as plt
 import numpy as np
 from scheduling import Scheduler
+from configuration import Config
 #TODO : Find next job for the customer should be a function
 
 class BasicSimulate:
@@ -16,17 +17,17 @@ class BasicSimulate:
     next_event_time = 0
     ARRIVAL_RATE = .19      #lambda
     SERVICE_RATE = .50        #mu
-    NUM_QUEUES = 2
-
+    config = Config('perfsim.config')
     def __init__(self):
         '''The constructor'''
+
         self.customer_pool = {}  #should be a class variable, saving typing
         self.timeline = []  #to be used as a heap or a priority queue
         
-
+        self.NUM_SERVER = BasicSimulate.config.NUM_SERVER
         self.SERVER_BUSY = [] #This is required to ensure that a process does not enter the queue if there is no one else in the system
         self.service_queue = []
-        for i in range(0, self.NUM_QUEUES):
+        for i in range(0, self.NUM_SERVER):
             self.service_queue.append(Queue(0)) #infinite queue
             self.SERVER_BUSY.append(False)
 
@@ -211,7 +212,7 @@ class BasicSimulate:
     def printQ(self):
         '''Prints the service queue'''
 
-        for i in range(0, self.NUM_QUEUES):
+        for i in range(0, self.NUM_SERVER):
             print 'Queue', i
             Q = self.service_queue[i]
             print
@@ -231,9 +232,9 @@ class BasicSimulate:
     def create_customer(self):
 
         '''Creates a random customer to be inserted into the pool'''
-        job_arr = [0] * self.NUM_QUEUES
+        job_arr = [0] * self.NUM_SERVER
         while(sum(job_arr) == 0): #loop till the new customer has atleast 1 job
-            for i in range(0, self.NUM_QUEUES):
+            for i in range(0, self.NUM_SERVER):
                 if(random.random() > 0.5):
                     job_arr[i] = 1
                 else:
