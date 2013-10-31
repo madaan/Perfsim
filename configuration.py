@@ -14,7 +14,13 @@ class Config:
         self.ARRIVAL_DIST = config.get('system', 'ARRIVAL_DIST')
         self.ARRIVAL_DIST_MEAN = config.get('system', 'ARRIVAL_DIST_MEAN')
 
-        self.server_config = {} #A dictionary of dictionaries
+        '''
+        {
+        'server_0': {'service_dist': 'E', 'service_dist_rate': '.30'}, 
+        'server_1': {'service_dist': 'D', 'service_dist_rate': '.20'}
+        }
+        '''
+        self.server_config = {} #A dictionary of dictionaries, as shown above
         for section in config.sections()[1:]: #Skip the system
             self.server_config[section] = {}
             for option in config.options(section):

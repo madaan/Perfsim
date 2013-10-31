@@ -223,9 +223,9 @@ class BasicSimulate:
     def get_next_job(self, customer):
         '''Calls the correct scheduler, passing the customer and the list of queues in the system. The scheduler can be chosen by the customer by specifying in a config file.'''
 
-        if(sum(customer.jobs) == 0): #
+        if(sum(customer.jobs) == 0): 
             return -1
-        return Scheduler.smallest_queue_next(customer, self.service_queue)
+        return Scheduler.experience_counts(customer, self.service_queue, self.config)
 
     def printQ(self):
         '''Prints the service queue'''

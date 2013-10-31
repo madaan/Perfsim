@@ -1,10 +1,11 @@
 #sg
 
-import ConfigParser
-config = ConfigParser.ConfigParser()
-config.read('perfsim.config')
-#Read the system parameters :
-self.NUM_SERVER = int(config.get('system', 'NUM_SERVER'))
+import random
+mu = 0.5
+v = 0.2
+
+for i in range(0, 1000):
+    print random.normalvariate(mu, v)
 
 
 
