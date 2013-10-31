@@ -206,7 +206,7 @@ class BasicSimulate:
     def get_next_job(self, customer):
         '''Calls the correct scheduler, passing the customer and the list of queues in the system. The scheduler can be chosen by the customer by specifying in a config file.'''
 
-        return Scheduler.naive(customer, self.service_queue)
+        return Scheduler.smallest_queue_next(customer, self.service_queue)
 
     def printQ(self):
         '''Prints the service queue'''
