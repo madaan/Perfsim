@@ -78,7 +78,7 @@ class BasicSimulate:
             #raw_input('\n\n\n[ENTER] to continue')
             import time
             time.sleep(.15)
-
+        stats(customer_pool)
     def handle_arrival(self, arrive_event):
         '''Handles the arrival event'''
 
@@ -113,6 +113,7 @@ class BasicSimulate:
     def add_to_queue(self, Q, cust):
         '''Add customer to given service queue'''
 
+        cust.arrival_time = self.current_time
         Q.put(cust)
         #A departure cannot be scheduled right now because you don't really know how long you'll have to wait
 
@@ -171,23 +172,28 @@ class BasicSimulate:
                 self.sim_start()
 
 
+
     def remove_from_queue(self, Q):
 
         '''Removes the top most executing process from the queue. Also schedules the next departure'''
        
         if(Q.qsize() > 0):
-            Q.get()
+            cust = Q.get()
+            cust.finish_time = self.current_time
+            cust.waiting_time = cust.waiting_time + \
+                                cust.finish_time - cust.arrival_time
 
     def create_arrival_event(self, time_from, customer):
         '''Put an arrival event given the parameters on the timeline and return the event time'''
 
-        next_arrival_time = float("inf")
+        next_arrival_time = 0
         #Time of next arrival
         if(self.config.ARRIVAL_DIST == 'E'):
-            next_arrival_time = random.expovariate(self.config.ARRIVAL_DIST_MEAN) + time_from;
+            
+            next_arrival_time = random.expovariate(float(self.config.ARRIVAL_DIST_MEAN)) + time_from
 
         elif(self.config.ARRIVAL_DIST_MEAN == 'D'):
-            next_arrival_time = self.config/ARRIVAL_DIST_MEAN + time_from
+            next_arrival_time = float(self.config.ARRIVAL_DIST_MEAN) + time_from
 
 		#create an event with the next customer and arrival timeline
         event =  Event(customer, EventType.ARRIVAL,next_arrival_time)

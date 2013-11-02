@@ -23,6 +23,9 @@ class Customer:
 
         Customer.cust_count = Customer.cust_count + 1
         self.jobs = jobs
+        self.wait = 0
+        self.arrival_time = 0
+        self.finish_time = float("inf")    
     
     def print_customer(self):
         print 'Customer id : %d, Jobs : ' % self.cust_id,

@@ -22,6 +22,7 @@ class Scheduler:
             next_job = -1
 
         return next_job
+
     def smallest_queue_next(self, customer, queues):
         '''(Relatively) Smarter scheduling strategy. Get to the queue which is the smallest in length. In case of a tie, go to the queue which has a smaller queue number'''
 
@@ -84,6 +85,8 @@ class Scheduler:
 
         else:
             return self.naive(customer)
+
+
 
 
 
