@@ -9,16 +9,22 @@ from Queue import *
 import numpy as np
 from scheduling import Scheduler
 from configuration import Config
+from stats import Stats
 #TODO : Find next job for the customer should be a function
 
 class BasicSimulate:
 
     current_time = 0
     next_event_time = 0
+    CUSTOMER_POOL_SIZE = 10
+    #No new customers will be created once this limit is reached
+    #A customer will be picked up from the existing pool with slightly more 
+    #experience
     config = Config('perfsim.config')
     def __init__(self):
         '''The constructor'''
 
+        self.num_cust = 0
         self.customer_pool = {}  #should be a class variable, saving typing
         self.timeline = []  #to be used as a heap or a priority queue
         
@@ -49,36 +55,36 @@ class BasicSimulate:
 
 
     def timeline_processor(self):
-        '''Te function which pulls out events from the timeline and processes them'''
+        '''The function which pulls out events from the timeline and processes them'''
 
         step = 0
-        while(len(self.timeline) > 0 and step < 2500): 
+        while(len(self.timeline) > 0 and step < 25000 and Customer.cust_count < 10): 
 
             step = step + 1
-            print 'Finished : ', step
-            import os
-            os.system('clear')
+            #print 'Finished : ', step
+            #import os
+            #os.system('clear')
 
-            self.print_timeline()
+            #self.print_timeline()
             (self.current_time, next_event) = heappop(self.timeline)
-            print '\nTime  : %f \n' % self.current_time
-            print 'Event : ', self.current_time, EventType.name(next_event.event_type)
-            print
+            #print '\nTime  : %f \n' % self.current_time
+            #print 'Event : ', self.current_time, EventType.name(next_event.event_type)
             if(next_event.event_type == EventType.ARRIVAL):
-                print 'After Processing Arrival :\n'
+                #print 'After Processing Arrival :\n'
                 self.handle_arrival(next_event)
 				
 				
             else : #elif(next_event.event_type == EventType.SERVICE_FINISH_1)
-                print 'After Processing Service finish :\n'
+                #print 'After Processing Service finish :\n'
                 self.handle_service_finish(next_event)
-            self.printQ()
-            self.print_timeline() 
+            #self.printQ()
+            #self.print_timeline() 
             #log_file.write('%d\n' % (self.service_queue.qsize()))
             #raw_input('\n\n\n[ENTER] to continue')
-            import time
-            time.sleep(.15)
-        stats(customer_pool)
+            #import time
+            #time.sleep(.015)
+        print Stats.average_waiting_time(self.customer_pool)
+
     def handle_arrival(self, arrive_event):
         '''Handles the arrival event'''
 
@@ -94,6 +100,10 @@ class BasicSimulate:
 
         #Get the customer related to the event
         cust = arrive_event.customer
+        
+        #Need to update the first arrival time if required
+        if(cust.first_entry_time == -1):
+            cust.first_entry_time = self.current_time
 
         #Add the customer to the customer pool
         self.customer_pool[cust.cust_id] = cust
@@ -114,6 +124,9 @@ class BasicSimulate:
         '''Add customer to given service queue'''
 
         cust.arrival_time = self.current_time
+        print '\tEntering the queue'
+        print 'Customer : ', cust.cust_id
+        print 'Arrival Time : ', cust.arrival_time
         Q.put(cust)
         #A departure cannot be scheduled right now because you don't really know how long you'll have to wait
 
@@ -147,8 +160,8 @@ class BasicSimulate:
                 self.create_finish_event(self.current_time, EventType.type_from_num(next_job), cust) 
 
         else:
-            pass
-            #nothing to do, the customer is done with all the jobs.
+            #Need to update the final finish time of the customer
+            cust.final_exit_time = self.current_time
 
         #Done handling the current customer
         #The following code handles the customer which is now at the head of hte queue
@@ -182,8 +195,18 @@ class BasicSimulate:
             cust.finish_time = self.current_time
             cust.waiting_time = cust.waiting_time + \
                                 cust.finish_time - cust.arrival_time
+        
+
+        '''
+        print '\tLeaving the queue'
+        print 'Customer : ', cust.cust_id
+        print 'Arrival Time : ', cust.arrival_time
+        print 'Departure Time : ', cust.finish_time
+        print 'waiting time : ', cust.waiting_time
+        '''
 
     def create_arrival_event(self, time_from, customer):
+
         '''Put an arrival event given the parameters on the timeline and return the event time'''
 
         next_arrival_time = 0
@@ -199,6 +222,10 @@ class BasicSimulate:
         event =  Event(customer, EventType.ARRIVAL,next_arrival_time)
         heappush(self.timeline, (next_arrival_time, event))
         return next_arrival_time
+
+
+
+
 
     def create_finish_event(self, time_from, etype, customer):
 
@@ -256,15 +283,23 @@ class BasicSimulate:
     def create_customer(self):
 
         '''Creates a random customer to be inserted into the pool'''
+
+        if(Customer.cust_count > self.CUSTOMER_POOL_SIZE):
+            pass
+            #need to pick a customer from the pool only
+
         job_arr = [0] * self.NUM_SERVER
-        while(sum(job_arr) == 0): #loop till the new customer has atleast 1 job
+        while(sum(job_arr) != 2): #loop till the new customer has atleast 1 job
             for i in range(0, self.NUM_SERVER):
                 if(random.random() > 0.5):
                     job_arr[i] = 1
                 else:
                     job_arr[i] = 0
 
-        return Customer(job_arr)
+        cust  = Customer(job_arr)
+        self.customer_pool[cust.cust_id] = cust
+        return cust
+
 
 
 

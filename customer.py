@@ -7,7 +7,8 @@ class Customer:
     def __init__(self, jobs):
         '''A unique customer id. Integers starting from 1'''
         self.cust_id = Customer.cust_count + 1
-
+        self.first_entry_time = -1
+        self.final_exit_time = -1
         '''
         Experience is between 0 and 1. A customer with high experience
         is likely to know his way around the office and thus experience
@@ -23,7 +24,7 @@ class Customer:
 
         Customer.cust_count = Customer.cust_count + 1
         self.jobs = jobs
-        self.wait = 0
+        self.waiting_time = 0
         self.arrival_time = 0
         self.finish_time = float("inf")    
     
