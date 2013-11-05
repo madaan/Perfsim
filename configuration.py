@@ -25,7 +25,6 @@ class Config:
             self.server_config[section] = {}
             for option in config.options(section):
                 self.server_config[section][option] = config.get(section, option)
-        print self.server_config
     
 if __name__ == '__main__':
     Config('perfsim.config')

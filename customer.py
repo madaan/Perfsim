@@ -29,6 +29,6 @@ class Customer:
         self.finish_time = float("inf")    
     
     def print_customer(self):
-        print 'Customer id : %d, Jobs : ' % self.cust_id,
-        print self.jobs,
+        print 'Customer id : %d, First entry  : %f, Final exit : %f' % (self.cust_id, self.first_entry_time, self.final_exit_time)
+        #print self.jobs,
 

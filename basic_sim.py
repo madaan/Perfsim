@@ -16,7 +16,7 @@ class BasicSimulate:
 
     current_time = 0
     next_event_time = 0
-    CUSTOMER_POOL_SIZE = 10
+    CUSTOMER_POOL_SIZE = 10000
     #No new customers will be created once this limit is reached
     #A customer will be picked up from the existing pool with slightly more 
     #experience
@@ -58,7 +58,7 @@ class BasicSimulate:
         '''The function which pulls out events from the timeline and processes them'''
 
         step = 0
-        while(len(self.timeline) > 0 and step < 25000 and Customer.cust_count < 10): 
+        while(len(self.timeline) > 0 and step < 25000 and Customer.cust_count < self.CUSTOMER_POOL_SIZE): 
 
             step = step + 1
             #print 'Finished : ', step
@@ -83,8 +83,10 @@ class BasicSimulate:
             #raw_input('\n\n\n[ENTER] to continue')
             #import time
             #time.sleep(.015)
-        print Stats.average_waiting_time(self.customer_pool)
-
+        #self.print_customer_pool()
+        print 'Average waiting time : ', Stats.average_waiting_time(self.customer_pool)
+        print 'Average response time : ', Stats.average_response_time(self.customer_pool) 
+        print 'Throughtput : ', Stats.throughput(self.customer_pool, 0, self.current_time) 
     def handle_arrival(self, arrive_event):
         '''Handles the arrival event'''
 
@@ -124,9 +126,11 @@ class BasicSimulate:
         '''Add customer to given service queue'''
 
         cust.arrival_time = self.current_time
+        '''
         print '\tEntering the queue'
         print 'Customer : ', cust.cust_id
         print 'Arrival Time : ', cust.arrival_time
+        '''
         Q.put(cust)
         #A departure cannot be scheduled right now because you don't really know how long you'll have to wait
 
@@ -301,6 +305,11 @@ class BasicSimulate:
         return cust
 
 
+
+
+    def print_customer_pool(self):
+        for cust_id in self.customer_pool.keys():
+            self.customer_pool[cust_id].print_customer()
 
 
 if __name__ == '__main__':
