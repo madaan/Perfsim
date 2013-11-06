@@ -8,3 +8,7 @@ Imple notes :
 Scheduling departure : 
 
 The departure will be scheduled either during adding if the process being added is the only process. Otherwise, a departure will be scheduled every time there is a departure. A departure is also scheduled if the queue is empty and there is an arrival to happen.
+
+TODO :
+1. The scheduling algorithm should be included as an option in the config file.
+2. Need to model interrupts while servicing.

@@ -33,8 +33,9 @@ class BasicSimulate:
         self.SERVER_BUSY = [] #This is required to ensure that a process does not enter the queue if there is no one else in the system
         self.service_queue = []
         for i in range(0, self.NUM_SERVER):
-            self.service_queue.append(Queue(0)) #infinite queue
-            self.SERVER_BUSY.append(False)
+            #self.service_queue.append(Queue(0)) #infinite queue
+            #self.SERVER_BUSY.append(False)
+            self.service_queue.append(Server())
 
         self.verbose = False
         self.do_wait = False
@@ -123,7 +124,7 @@ class BasicSimulate:
         job_requested = self.get_next_job(cust)
 
         if(self.SERVER_BUSY[job_requested]): 
-            self.add_to_queue(self.service_queue[job_requested], cust)
+            self.add_to_queue(self.service_queue[job_requested].Q, cust)
         else: #No need to add to queue, but should mark the server as busy
             self.SERVER_BUSY[job_requested] = True
             #since the server is not busy, it will immediately start processing the event
@@ -145,22 +146,14 @@ class BasicSimulate:
 
     def handle_service_finish(self, finish_event):
         '''Handle service finish event'''
-
         #We now need a way to determine to which queue was the person added
-        
         cust = finish_event.customer
-
         etype = finish_event.event_type
-
+        #get the queue number which has caused the event
         qno = EventType.queue_from_event(etype); 
-        #returns the queue number which has caused the event
-
         Q = self.service_queue[qno]
-
-
         #Mark the bit vector of the customer to reflect the change
-
-        cust.jobs[qno] = 0
+        cust.jobs[qno] = 0 #1 -> 0, job over
         
         if(sum(cust.jobs) > 0): 
             #not yet done, need to find the next pending job
@@ -176,7 +169,8 @@ class BasicSimulate:
             cust.final_exit_time = self.current_time
 
         #Done handling the current customer
-        #The following code handles the customer which is now at the head of hte queue
+
+        #The following code handles the customer which is now at the head of the queue
         if(Q.qsize() >= 1): 
             #need to schedule a departure
             #get the next customer
@@ -272,6 +266,17 @@ class BasicSimulate:
             return -1
         return Scheduler.experience_counts(customer, self.service_queue, self.config)
 
+    def get_interrupt_time():
+        '''This returns the time for which a customer might have to wait due to servers taking interrupts (A phone call, a cup of tea and the likes)''' 
+        
+
+
+
+
+
+
+
+
     def printQ(self):
         '''Prints the service queue'''
 
@@ -294,8 +299,8 @@ class BasicSimulate:
 
     def create_customer(self):
 
-        import random
         '''Creates a random customer to be inserted into the pool'''
+        import random
 
         if(Customer.cust_count > self.CUSTOMER_POOL_SIZE):
             #need to pick a customer from the pool only
@@ -333,12 +338,15 @@ class BasicSimulate:
 
 
     def print_customer_pool(self):
+        '''prints customer pool'''
         for cust_id in self.customer_pool.keys():
             self.customer_pool[cust_id].print_customer()
 
 
     def cust_log(self, cust):
+        '''logs customer information to stdout'''
         print 'id : %d, expr : %f, entered : %f, exited : %f,  waiting time : %f' % (cust.cust_id, cust.expr, cust.first_entry_time, cust.final_exit_time, cust.waiting_time)
+
 
 
 if __name__ == '__main__':

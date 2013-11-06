@@ -1,1 +1,5 @@
 1. Interrupts occur frequently in public offices. We model these by noting that an interrupt simply means that the service time of a user is more than it should have been. Thus, we if an interrupt occurs, the service finished event for that particular customer is delayed by some amount.
+
+2. Need a random variable which mostly returns 0. *Sometimes*, rarely, it reutns a positive value.
+
+3. This is being done right now by counting the number of users served by a customer. A customer takes a break everytime it has served some number of users, modelled by it's fatigue_cap

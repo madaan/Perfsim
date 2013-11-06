@@ -1,0 +1,18 @@
+Guide to writing a configuration file :
+
+## A) Distributions
+
+1. D : Deterministic
+    Rate : Actually the time interval that elapses between events. Eg service rate = 5 means that the server takes 5 units of time to serve a customer.
+
+2. E : Exponential
+    Rate : Inverse of the mean.
+
+## B) Scheduling
+Refer to Scheduler.py for details.
+
+0 : Naive : Naive scheduler
+1. SQN : Shortest queue next
+2. SFQN : Shortest fastest queue next
+3. OBS : Order based scheduling 
+4. EC : Experience counts

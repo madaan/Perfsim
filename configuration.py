@@ -11,6 +11,7 @@ class Config:
         config.read('perfsim.config')
         #Read the system parameters :
         self.NUM_SERVER = int(config.get('system', 'NUM_SERVER'))
+        self.SCHEDULING_ALGO = config.get('system', 'SCHEDULING_ALGO')
         self.ARRIVAL_DIST = config.get('system', 'ARRIVAL_DIST')
         self.ARRIVAL_DIST_MEAN = float(config.get('system', 'ARRIVAL_DIST_RATE'))
         self.NUM_STEPS = int(config.get('system', 'NUM_STEPS'))
