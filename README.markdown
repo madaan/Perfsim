@@ -1,9 +1,10 @@
 ##The simulator now has the following features :
-1. Any number of servers be specified
-2. Distribution for servers can be specified
-3. Customers are picked from a user pool which grows only till a user specified 
-4. Users have an experience which keeps on increasing as they visit the bank aga
-5. The servers have a fatigue cap after which they stand up to take a break. Thu
+1. Any number of servers be specified.
+2. Distribution for servers can be specified.
+3. Customers are picked from a user pool which grows only till a user specified
+limit. 
+4. Users have an experience which keeps on increasing as they visit the bank.
+5. The servers have a fatigue cap after which they stand up to take a break.
 6. Several scheduling algorithms are implemented in scheduler.py
 7. Most of the options can be specified in the config file which is parsed befor
 8. Essential statistics are being calculated.
