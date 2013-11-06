@@ -1,3 +1,4 @@
+#Simulator for a server with load dependent service rate and dynamic queue joining probabilities
 ##The simulator now has the following features :
     1. Any number of servers be specified.
 	2. Distribution for servers can be specified.
@@ -27,7 +28,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
 
-##Simulator for a server with load dependent service rate and dynamic queue joining probabilities
 
 Imple notes :
 
