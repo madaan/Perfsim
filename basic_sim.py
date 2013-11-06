@@ -7,29 +7,39 @@ from heapq import *
 from Queue import *
 #import matplotlib.pyplot as plt
 import numpy as np
-
+from scheduling import Scheduler
+from configuration import Config
+from stats import Stats
+from server import Server
 #TODO : Find next job for the customer should be a function
 
 class BasicSimulate:
 
     current_time = 0
     next_event_time = 0
-    ARRIVAL_RATE = .40      #lambda
-    SERVICE_RATE = .50        #mu
-    NUM_QUEUES = 4
-
+    #No new customers will be created once this limit is reached
+    #A customer will be picked up from the existing pool with slightly more 
+    #experience
+    config = Config('perfsim.config')
     def __init__(self):
         '''The constructor'''
+
+        self.num_cust = 0
         self.customer_pool = {}  #should be a class variable, saving typing
         self.timeline = []  #to be used as a heap or a priority queue
         
-
+        self.NUM_SERVER = BasicSimulate.config.NUM_SERVER
+        self.NUM_STEPS = BasicSimulate.config.NUM_STEPS
+        self.CUSTOMER_POOL_SIZE = BasicSimulate.config.CUSTOMER_POOL_SIZE
         self.SERVER_BUSY = [] #This is required to ensure that a process does not enter the queue if there is no one else in the system
-        self.service_queue = []
-        for i in range(0, self.NUM_QUEUES):
-            self.service_queue.append(Queue(0)) #infinite queue
-            self.SERVER_BUSY.append(False)
+        self.server = []
+        for i in range(0, self.NUM_SERVER):
+            #self.server.append(Queue(0)) #infinite queue
+            #self.SERVER_BUSY.append(False)
+            self.server.append(Server(10, .4))
 
+        self.verbose = False
+        self.do_wait = False
         self.sim_start()
         self.timeline_processor()
         
@@ -50,36 +60,43 @@ class BasicSimulate:
 
 
     def timeline_processor(self):
-        '''Te function which pulls out events from the timeline and processes them'''
+        '''The function which pulls out events from the timeline and processes them'''
 
+        import time
+        import os
         step = 0
-        while(len(self.timeline) > 0 and step < 2500): 
+        while(len(self.timeline) > 0 and step < self.NUM_STEPS): 
 
             step = step + 1
-            print 'Finished : ', step
-            import os
-            os.system('clear')
-
-            self.print_timeline()
+            if(self.verbose):
+                print 'Finished : ', step
+                os.system('clear')
+                self.print_timeline()
             (self.current_time, next_event) = heappop(self.timeline)
-            print '\nTime  : %f \n' % self.current_time
-            print 'Event : ', self.current_time, EventType.name(next_event.event_type)
-            print
+            if(self.verbose):
+                print '\nTime  : %f \n' % self.current_time
+                print 'Event : ', self.current_time, EventType.name(next_event.event_type)
             if(next_event.event_type == EventType.ARRIVAL):
-                print 'After Processing Arrival :\n'
+                if(self.verbose):
+                    print 'After Processing Arrival :\n'
                 self.handle_arrival(next_event)
 				
 				
             else : #elif(next_event.event_type == EventType.SERVICE_FINISH_1)
-                print 'After Processing Service finish :\n'
+                if(self.verbose):
+                    print 'After Processing Service finish :\n'
                 self.handle_service_finish(next_event)
-            self.printQ()
-            self.print_timeline() 
-            #log_file.write('%d\n' % (self.service_queue.qsize()))
+            if(self.verbose):
+                self.printQ()
+                self.print_timeline() 
+            #log_file.write('%d\n' % (self.server.qsize()))
             #raw_input('\n\n\n[ENTER] to continue')
-            import time
-            time.sleep(.15)
-
+            if(self.do_wait):
+                time.sleep(1)
+        #self.print_customer_pool()
+        print 'Average waiting time : ', Stats.average_waiting_time(self.customer_pool)
+        print 'Average response time : ', Stats.average_response_time(self.customer_pool) 
+        print 'Throughtput : ', Stats.throughput(self.customer_pool, 0, self.current_time) 
     def handle_arrival(self, arrive_event):
         '''Handles the arrival event'''
 
@@ -95,6 +112,10 @@ class BasicSimulate:
 
         #Get the customer related to the event
         cust = arrive_event.customer
+        
+        #Need to update the first arrival time if required
+        if(cust.first_entry_time == -1): #First entry in the system
+            cust.first_entry_time = self.current_time
 
         #Add the customer to the customer pool
         self.customer_pool[cust.cust_id] = cust
@@ -103,10 +124,10 @@ class BasicSimulate:
         #If a job has arrived here, there must be some job pending
         job_requested = self.get_next_job(cust)
 
-        if(self.SERVER_BUSY[job_requested]): 
-            self.add_to_queue(self.service_queue[job_requested], cust)
+        if(self.server[job_requested].SERVER_BUSY): 
+            self.add_to_queue(self.server[job_requested].Q, cust)
         else: #No need to add to queue, but should mark the server as busy
-            self.SERVER_BUSY[job_requested] = True
+            self.server[job_requested].SERVER_BUSY = True
             #since the server is not busy, it will immediately start processing the event
             self.create_finish_event(self.current_time, EventType.type_from_num(job_requested), cust) 
 
@@ -114,51 +135,45 @@ class BasicSimulate:
     def add_to_queue(self, Q, cust):
         '''Add customer to given service queue'''
 
+        cust.arrival_time = self.current_time
+        '''
+        print '\tEntering the queue'
+        print 'Customer : ', cust.cust_id
+        print 'Arrival Time : ', cust.arrival_time
+        '''
         Q.put(cust)
         #A departure cannot be scheduled right now because you don't really know how long you'll have to wait
 
 
     def handle_service_finish(self, finish_event):
         '''Handle service finish event'''
-
         #We now need a way to determine to which queue was the person added
-        
         cust = finish_event.customer
-
         etype = finish_event.event_type
-
-        qno = 0
-        if(etype == EventType.SERVICE_FINISH_0):
-            qno = 0
-        elif(etype == EventType.SERVICE_FINISH_1):
-            qno = 1
-        elif(etype == EventType.SERVICE_FINISH_2):
-            qno = 2
-        elif(etype == EventType.SERVICE_FINISH_3):
-            qno = 3
-
-        Q = self.service_queue[qno]
-
-
+        #get the queue number which has caused the event
+        qno = EventType.queue_from_event(etype); 
+        Q = self.server[qno].Q
+        #Add 1 to the number of customers served till now
+        self.server[qno].served = self.server[qno].served + 1
         #Mark the bit vector of the customer to reflect the change
-
-        cust.jobs[qno] = 0
+        cust.jobs[qno] = 0 #1 -> 0, job over
         
         if(sum(cust.jobs) > 0): 
             #not yet done, need to find the next pending job
             next_job = self.get_next_job(cust)
-            if(self.SERVER_BUSY[next_job]):
-                self.add_to_queue(self.service_queue[next_job], cust)
+            if(self.server[next_job].SERVER_BUSY):
+                self.add_to_queue(self.server[next_job].Q, cust)
             else:
-                self.SERVER_BUSY[next_job] = True
+                self.server[next_job].SERVER_BUSY = True
                 self.create_finish_event(self.current_time, EventType.type_from_num(next_job), cust) 
 
         else:
-            pass
-            #nothing to do, the customer is done with all the jobs.
+            #Need to update the final finish time of the customer
+            cust.final_exit_time = self.current_time
 
         #Done handling the current customer
-        #The following code handles the customer which is now at the head of hte queue
+
+        #The following code handles the customer which is now at the head of the queue
         if(Q.qsize() >= 1): 
             #need to schedule a departure
             #get the next customer
@@ -173,21 +188,11 @@ class BasicSimulate:
 
         #QSize already 0? Can finish here
         if(Q.qsize() == 0):  #need to schedule an arrival and dept
-            self.SERVER_BUSY[qno] = False
+            self.server[qno].SERVER_BUSY = False
             #print 'Queue Empty'
             if(len(self.timeline) == 0): #There is no event
                 self.sim_start()
 
-            else: 
-                pass
-            '''
-                #The queue is empty but there is an event on the timeline, thus the event can only be an arrival. NOT ANYMORE
-                #Schedule a departure for the arrival
-                (time_arrival, event) = self.timeline[0] #heap :)
-                #Find out what will be the first queue in which the arrival will enter
-                next_arrival_job_type = self.get_next_job(event.customer)
-                self.create_finish_event(time_arrival, EventType.type_from_num(next_arrival_job_type), event.customer)
-             '''
 
 
     def remove_from_queue(self, Q):
@@ -195,24 +200,61 @@ class BasicSimulate:
         '''Removes the top most executing process from the queue. Also schedules the next departure'''
        
         if(Q.qsize() > 0):
-            Q.get()
+            cust = Q.get()
+            cust.finish_time = self.current_time
+            cust.waiting_time = cust.waiting_time + \
+                                cust.finish_time - cust.arrival_time
+        
+
+        '''
+        print '\tLeaving the queue'
+        print 'Customer : ', cust.cust_id
+        print 'Arrival Time : ', cust.arrival_time
+        print 'Departure Time : ', cust.finish_time
+        print 'waiting time : ', cust.waiting_time
+        '''
 
     def create_arrival_event(self, time_from, customer):
+
         '''Put an arrival event given the parameters on the timeline and return the event time'''
 
+        next_arrival_time = 0
         #Time of next arrival
-        next_arrival_time = random.expovariate(self.ARRIVAL_RATE) + time_from;
+        if(self.config.ARRIVAL_DIST == 'E'):
+            
+            next_arrival_time = random.expovariate(float(self.config.ARRIVAL_DIST_MEAN)) + time_from
 
+        elif(self.config.ARRIVAL_DIST_MEAN == 'D'):
+            next_arrival_time = float(self.config.ARRIVAL_DIST_MEAN) + time_from
 
 		#create an event with the next customer and arrival timeline
         event =  Event(customer, EventType.ARRIVAL,next_arrival_time)
         heappush(self.timeline, (next_arrival_time, event))
         return next_arrival_time
 
+
+
+
+
     def create_finish_event(self, time_from, etype, customer):
 
         '''Put a departure event given the parameters on the timeline and return the event time'''
-        service_finish_time = float(time_from) + random.expovariate(self.SERVICE_RATE)
+        #Decide finish time based
+        # 1. Get the queue
+        qno = EventType.queue_from_event(etype)
+        
+        config_key = 'server_' + str(qno) #get distribution and mean from config
+        dist = self.config.server_config[config_key]['service_dist']
+        dist_rate = float(self.config.server_config[config_key]['service_dist_rate'])
+        
+        service_finish_time = 0 
+        if(dist == 'E'):
+            #Interrupt time is time for which the server is interrupted
+            service_finish_time = float(time_from) + random.expovariate(dist_rate) + self.get_interrupt_time(self.server[qno])
+        elif(dist == 'D'):
+            service_finish_time = float(time_from) + dist_rate + self.get_interrupt_time(self.server[qno])
+
+
         #find a job that is yet incomplete
 
         #raw_input('>')
@@ -222,26 +264,33 @@ class BasicSimulate:
         return service_finish_time
 
     def get_next_job(self, customer):
-        '''Returns the next queue that a customer should join'''
-        '''Returns -1 if a customer is done'''
+        '''Calls the correct scheduler, passing the customer and the list of queues in the system. The scheduler can be chosen by the customer by specifying in a config file.'''
 
-        next_job = 0
-        try:
-            next_job = customer.jobs.index(1)
-        
-        except ValueError:
-            next_job = -1
+        if(sum(customer.jobs) == 0): 
+            return -1
+        return Scheduler.experience_counts(customer, self.server, self.config)
 
-        return next_job
+    def get_interrupt_time(self, serving_server): #Talk of variable names
+        '''This returns the time for which a customer might have to wait due to servers taking interrupts (A phone call, a cup of tea and the likes)''' 
+        #Everytime the server reaches its fatigue limit, it takes break
+        if(serving_server.served % serving_server.fatigue_cap == 0):
+            return serving_server.break_time
+        else:
+            return 0
 
-        #Later, the complex scheduling poilicies may be entered here
+
+
+
+
+
+
 
     def printQ(self):
         '''Prints the service queue'''
 
-        for i in range(0, self.NUM_QUEUES):
+        for i in range(0, self.NUM_SERVER):
             print 'Queue', i
-            Q = self.service_queue[i]
+            Q = self.server[i].Q
             print
             for ele in Q.queue:
                 print '|| ',ele.cust_id,'(', ele.jobs, ') || <- ',
@@ -259,15 +308,52 @@ class BasicSimulate:
     def create_customer(self):
 
         '''Creates a random customer to be inserted into the pool'''
-        job_arr = [0] * Customer.NUM_JOBS
-        while(sum(job_arr) == 0): #loop till the new customer has atleast 1 job
-            for i in range(0, Customer.NUM_JOBS):
+        import random
+
+        if(Customer.cust_count > self.CUSTOMER_POOL_SIZE):
+            #need to pick a customer from the pool only
+            # 1.Randomly get an index for the customer to be entered
+            selection = random.randrange(1, self.CUSTOMER_POOL_SIZE, 1)
+            cust= self.customer_pool[selection]
+            
+            #log for debugging
+            self.cust_log(cust)
+
+            #increase the experience by ?
+            cust.expr = cust.expr + random.random() / 100
+            
+            #update the times
+            cust.first_entry_time = -1
+            cust.final_exit_time = -1
+            cust.waiting_time = 0
+            
+            return cust
+            
+
+        job_arr = [0] * self.NUM_SERVER
+        while(sum(job_arr) != 2): #loop till the new customer has atleast 1 job
+            for i in range(0, self.NUM_SERVER):
                 if(random.random() > 0.5):
                     job_arr[i] = 1
                 else:
                     job_arr[i] = 0
 
-        return Customer(job_arr)
+        cust  = Customer(job_arr)
+        self.customer_pool[cust.cust_id] = cust
+        return cust
+
+
+
+
+    def print_customer_pool(self):
+        '''prints customer pool'''
+        for cust_id in self.customer_pool.keys():
+            self.customer_pool[cust_id].print_customer()
+
+
+    def cust_log(self, cust):
+        '''logs customer information to stdout'''
+        print 'id : %d, expr : %f, entered : %f, exited : %f,  waiting time : %f' % (cust.cust_id, cust.expr, cust.first_entry_time, cust.final_exit_time, cust.waiting_time)
 
 
 
