@@ -1,3 +1,14 @@
+##The simulator now has the following features :
+1. Any number of servers be specified
+2. Distribution for servers can be specified
+3. Customers are picked from a user pool which grows only till a user specified 
+4. Users have an experience which keeps on increasing as they visit the bank aga
+5. The servers have a fatigue cap after which they stand up to take a break. Thu
+6. Several scheduling algorithms are implemented in scheduler.py
+7. Most of the options can be specified in the config file which is parsed befor
+8. Essential statistics are being calculated.
+9. Simple plotting is being done.
+10. Lots of attention is paid to the design of the simulator.
 ##Simulator for a server with load dependent service rate and dynamic queue joining probabilities
 
 Imple notes :
