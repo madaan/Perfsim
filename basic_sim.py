@@ -10,6 +10,7 @@ import numpy as np
 from scheduling import Scheduler
 from configuration import Config
 from stats import Stats
+from server import Server
 #TODO : Find next job for the customer should be a function
 
 class BasicSimulate:
@@ -31,11 +32,11 @@ class BasicSimulate:
         self.NUM_STEPS = BasicSimulate.config.NUM_STEPS
         self.CUSTOMER_POOL_SIZE = BasicSimulate.config.CUSTOMER_POOL_SIZE
         self.SERVER_BUSY = [] #This is required to ensure that a process does not enter the queue if there is no one else in the system
-        self.service_queue = []
+        self.server = []
         for i in range(0, self.NUM_SERVER):
-            #self.service_queue.append(Queue(0)) #infinite queue
+            #self.server.append(Queue(0)) #infinite queue
             #self.SERVER_BUSY.append(False)
-            self.service_queue.append(Server())
+            self.server.append(Server(10, .4))
 
         self.verbose = False
         self.do_wait = False
@@ -88,7 +89,7 @@ class BasicSimulate:
             if(self.verbose):
                 self.printQ()
                 self.print_timeline() 
-            #log_file.write('%d\n' % (self.service_queue.qsize()))
+            #log_file.write('%d\n' % (self.server.qsize()))
             #raw_input('\n\n\n[ENTER] to continue')
             if(self.do_wait):
                 time.sleep(1)
@@ -123,10 +124,10 @@ class BasicSimulate:
         #If a job has arrived here, there must be some job pending
         job_requested = self.get_next_job(cust)
 
-        if(self.SERVER_BUSY[job_requested]): 
-            self.add_to_queue(self.service_queue[job_requested].Q, cust)
+        if(self.server[job_requested].SERVER_BUSY): 
+            self.add_to_queue(self.server[job_requested].Q, cust)
         else: #No need to add to queue, but should mark the server as busy
-            self.SERVER_BUSY[job_requested] = True
+            self.server[job_requested].SERVER_BUSY = True
             #since the server is not busy, it will immediately start processing the event
             self.create_finish_event(self.current_time, EventType.type_from_num(job_requested), cust) 
 
@@ -151,17 +152,17 @@ class BasicSimulate:
         etype = finish_event.event_type
         #get the queue number which has caused the event
         qno = EventType.queue_from_event(etype); 
-        Q = self.service_queue[qno]
+        Q = self.server[qno].Q
         #Mark the bit vector of the customer to reflect the change
         cust.jobs[qno] = 0 #1 -> 0, job over
         
         if(sum(cust.jobs) > 0): 
             #not yet done, need to find the next pending job
             next_job = self.get_next_job(cust)
-            if(self.SERVER_BUSY[next_job]):
-                self.add_to_queue(self.service_queue[next_job], cust)
+            if(self.server[next_job].SERVER_BUSY):
+                self.add_to_queue(self.server[next_job].Q, cust)
             else:
-                self.SERVER_BUSY[next_job] = True
+                self.server[next_job].SERVER_BUSY = True
                 self.create_finish_event(self.current_time, EventType.type_from_num(next_job), cust) 
 
         else:
@@ -185,7 +186,7 @@ class BasicSimulate:
 
         #QSize already 0? Can finish here
         if(Q.qsize() == 0):  #need to schedule an arrival and dept
-            self.SERVER_BUSY[qno] = False
+            self.server[qno].SERVER_BUSY = False
             #print 'Queue Empty'
             if(len(self.timeline) == 0): #There is no event
                 self.sim_start()
@@ -264,10 +265,11 @@ class BasicSimulate:
 
         if(sum(customer.jobs) == 0): 
             return -1
-        return Scheduler.experience_counts(customer, self.service_queue, self.config)
+        return Scheduler.experience_counts(customer, self.server, self.config)
 
     def get_interrupt_time():
         '''This returns the time for which a customer might have to wait due to servers taking interrupts (A phone call, a cup of tea and the likes)''' 
+        pass
         
 
 
@@ -282,7 +284,7 @@ class BasicSimulate:
 
         for i in range(0, self.NUM_SERVER):
             print 'Queue', i
-            Q = self.service_queue[i]
+            Q = self.server[i].Q
             print
             for ele in Q.queue:
                 print '|| ',ele.cust_id,'(', ele.jobs, ') || <- ',

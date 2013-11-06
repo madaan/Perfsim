@@ -25,20 +25,20 @@ class Scheduler:
 
         return next_job
 
-    def smallest_queue_next(self, customer, queues):
+    def smallest_queue_next(self, customer, servers):
         '''(Relatively) Smarter scheduling strategy. Get to the queue which is the smallest in length. In case of a tie, go to the queue which has a smaller queue number'''
 
         #Find the lengths of the queue which the customer needs.
         #Set length of other queues to INF so that they don't interfere
         #with calculation of minimum
         INFTY = float("inf")
-        lens = [queue.qsize() if customer.jobs[i] == 1 else INFTY for i,queue in enumerate(queues)]
+        lens = [server.Q.qsize() if customer.jobs[i] == 1 else INFTY for i,server in enumerate(servers)]
         
         #Now return the queue number of the queue which is the shortest
         return lens.index(min(lens))
 
 
-    def smallest_fastest_queue_next(self, customer, queues, config):
+    def smallest_fastest_queue_next(self, customer, servers, config):
 
         '''
         Considers both the length of the queue and the service rate.
@@ -46,7 +46,7 @@ class Scheduler:
             Goodness of a server = 1 / (service_rate + len)
         '''
         INFTY = float('inf')
-        lens = [queue.qsize() if customer.jobs[i] == 1 else INFTY for i,queue in enumerate(queues)]
+        lens = [server.Q.qsize() if customer.jobs[i] == 1 else INFTY for i,server in enumerate(servers)]
 
         rate = [0] * len(customer.jobs)
         for i in range(0, len(customer.jobs)):
@@ -81,7 +81,7 @@ class Scheduler:
 
 
 
-    def experience_counts(self, customer, queues, config):
+    def experience_counts(self, customer, servers, config):
 
         '''
         This is not a scheduling algorithm in itself, but is rather a filter.
@@ -97,10 +97,10 @@ class Scheduler:
         SMALLEST_THRESHOLD = 0.5
 
         if(customer.expr >= SMALLEST_FASTEST_THRESHOLD):
-            return self.smallest_fastest_queue_next(customer, queues, config)
+            return self.smallest_fastest_queue_next(customer, servers, config)
 
         elif(customer.expr >= SMALLEST_THRESHOLD):
-            return self.smallest_queue_next(customer, queues)
+            return self.smallest_queue_next(customer, servers)
 
         else:
             return self.naive(customer)
