@@ -317,7 +317,7 @@ class BasicSimulate:
             cust= self.customer_pool[selection]
             
             #log for debugging
-            self.cust_log(cust)
+            #self.cust_log(cust)
 
             #increase the experience by ?
             cust.expr = cust.expr + random.random() / 100

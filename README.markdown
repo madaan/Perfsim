@@ -1,4 +1,7 @@
-#Simulator for a system which has servers with load dependent service rate and the customers have dynamic queue joining probabilities
+#Simulator for a system which has servers with load dependent service rates and customers with dynamic queue joining probabilities. 
+
+###In simpler terms, we are trying to model the situation at places where public dealing is involved.
+
 ##The simulator now has the following features :
     1. Any number of servers be specified.
 	2. Distribution for servers can be specified.
@@ -13,7 +16,7 @@
 	9. Simple plotting is being done.
 	10. Lots of attention is paid to the design of the simulator.
 
-##License 
+##License (Current)
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
