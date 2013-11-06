@@ -153,6 +153,8 @@ class BasicSimulate:
         #get the queue number which has caused the event
         qno = EventType.queue_from_event(etype); 
         Q = self.server[qno].Q
+        #Add 1 to the number of customers served till now
+        self.server[qno].served = self.server[qno].served + 1
         #Mark the bit vector of the customer to reflect the change
         cust.jobs[qno] = 0 #1 -> 0, job over
         
@@ -247,9 +249,10 @@ class BasicSimulate:
         
         service_finish_time = 0 
         if(dist == 'E'):
-            service_finish_time = float(time_from) + random.expovariate(dist_rate)
+            #Interrupt time is time for which the server is interrupted
+            service_finish_time = float(time_from) + random.expovariate(dist_rate) + self.get_interrupt_time(self.server[qno])
         elif(dist == 'D'):
-            service_finish_time = float(time_from) + dist_rate
+            service_finish_time = float(time_from) + dist_rate + self.get_interrupt_time(self.server[qno])
 
 
         #find a job that is yet incomplete
@@ -267,10 +270,13 @@ class BasicSimulate:
             return -1
         return Scheduler.experience_counts(customer, self.server, self.config)
 
-    def get_interrupt_time():
+    def get_interrupt_time(self, serving_server): #Talk of variable names
         '''This returns the time for which a customer might have to wait due to servers taking interrupts (A phone call, a cup of tea and the likes)''' 
-        pass
-        
+        #Everytime the server reaches its fatigue limit, it takes break
+        if(serving_server.served % serving_server.fatigue_cap == 0):
+            return serving_server.break_time
+        else:
+            return 0
 
 
 
