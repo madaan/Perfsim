@@ -16,6 +16,35 @@
 	9. Simple plotting is being done.
 	10. Lots of attention is paid to the design of the simulator.
 
+##How are we modelling interrupts?
+
+1. Interrupts occur frequently in public offices. We model these by noting that an interrupt simply means that the service time of a user is more than it should have been. Thus, we if an interrupt occurs, the service finished event for that particular customer is delayed by some amount.
+
+2. This is being done right now by counting the number of users served by a server. A server takes a (random) break everytime it has served a fixed number of users.
+We call this number fatigue cap of the server.
+
+##Writing a configuration file
+
+### A) Distributions
+
+    *D : Deterministic
+    Rate : Actually the time interval that elapses between events. Eg service rate = 5 means that the server takes 5 units of time to serve a customer.
+
+    *E : Exponential
+    Rate : Inverse of the mean.
+
+### B) Scheduling
+Refer to Scheduler.py for details.
+
+    0 : Naive : Naive scheduler
+    1. SQN : Shortest queue next
+    2. SFQN : Shortest fastest queue next
+    3. OBS : Order based scheduling 
+    4. EC : Experience counts
+
+
+###More information can be found in docs/
+###[Why](http://www.quora.com/Python-programming-language-1/What-are-some-cool-Python-tricks) [python?](http://xkcd.com/353/)
 ##License (Current)
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
