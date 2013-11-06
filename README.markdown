@@ -1,4 +1,4 @@
-#Simulator for a server with load dependent service rate and dynamic queue joining probabilities
+#Simulator for a system which has servers with load dependent service rate and the customers have dynamic queue joining probabilities
 ##The simulator now has the following features :
     1. Any number of servers be specified.
 	2. Distribution for servers can be specified.
