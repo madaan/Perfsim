@@ -17,7 +17,7 @@ class Customer:
         The following values are ad-hoc. 
         Ideally we should have gone to the bank for this.
         '''
-        mu = .5
+        mu = .2
         variate = .1
 
         self.expr = random.normalvariate(mu, variate)

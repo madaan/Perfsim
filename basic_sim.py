@@ -16,7 +16,6 @@ class BasicSimulate:
 
     current_time = 0
     next_event_time = 0
-    CUSTOMER_POOL_SIZE = 10000
     #No new customers will be created once this limit is reached
     #A customer will be picked up from the existing pool with slightly more 
     #experience
@@ -29,12 +28,16 @@ class BasicSimulate:
         self.timeline = []  #to be used as a heap or a priority queue
         
         self.NUM_SERVER = BasicSimulate.config.NUM_SERVER
+        self.NUM_STEPS = BasicSimulate.config.NUM_STEPS
+        self.CUSTOMER_POOL_SIZE = BasicSimulate.config.CUSTOMER_POOL_SIZE
         self.SERVER_BUSY = [] #This is required to ensure that a process does not enter the queue if there is no one else in the system
         self.service_queue = []
         for i in range(0, self.NUM_SERVER):
             self.service_queue.append(Queue(0)) #infinite queue
             self.SERVER_BUSY.append(False)
 
+        self.verbose = False
+        self.do_wait = False
         self.sim_start()
         self.timeline_processor()
         
@@ -57,32 +60,37 @@ class BasicSimulate:
     def timeline_processor(self):
         '''The function which pulls out events from the timeline and processes them'''
 
+        import time
+        import os
         step = 0
-        while(len(self.timeline) > 0 and step < 25000 and Customer.cust_count < self.CUSTOMER_POOL_SIZE): 
+        while(len(self.timeline) > 0 and step < self.NUM_STEPS): 
 
             step = step + 1
-            #print 'Finished : ', step
-            #import os
-            #os.system('clear')
-
-            #self.print_timeline()
+            if(self.verbose):
+                print 'Finished : ', step
+                os.system('clear')
+                self.print_timeline()
             (self.current_time, next_event) = heappop(self.timeline)
-            #print '\nTime  : %f \n' % self.current_time
-            #print 'Event : ', self.current_time, EventType.name(next_event.event_type)
+            if(self.verbose):
+                print '\nTime  : %f \n' % self.current_time
+                print 'Event : ', self.current_time, EventType.name(next_event.event_type)
             if(next_event.event_type == EventType.ARRIVAL):
-                #print 'After Processing Arrival :\n'
+                if(self.verbose):
+                    print 'After Processing Arrival :\n'
                 self.handle_arrival(next_event)
 				
 				
             else : #elif(next_event.event_type == EventType.SERVICE_FINISH_1)
-                #print 'After Processing Service finish :\n'
+                if(self.verbose):
+                    print 'After Processing Service finish :\n'
                 self.handle_service_finish(next_event)
-            #self.printQ()
-            #self.print_timeline() 
+            if(self.verbose):
+                self.printQ()
+                self.print_timeline() 
             #log_file.write('%d\n' % (self.service_queue.qsize()))
             #raw_input('\n\n\n[ENTER] to continue')
-            #import time
-            #time.sleep(.015)
+            if(self.do_wait):
+                time.sleep(1)
         #self.print_customer_pool()
         print 'Average waiting time : ', Stats.average_waiting_time(self.customer_pool)
         print 'Average response time : ', Stats.average_response_time(self.customer_pool) 
@@ -104,7 +112,7 @@ class BasicSimulate:
         cust = arrive_event.customer
         
         #Need to update the first arrival time if required
-        if(cust.first_entry_time == -1):
+        if(cust.first_entry_time == -1): #First entry in the system
             cust.first_entry_time = self.current_time
 
         #Add the customer to the customer pool
@@ -286,11 +294,28 @@ class BasicSimulate:
 
     def create_customer(self):
 
+        import random
         '''Creates a random customer to be inserted into the pool'''
 
         if(Customer.cust_count > self.CUSTOMER_POOL_SIZE):
-            pass
             #need to pick a customer from the pool only
+            # 1.Randomly get an index for the customer to be entered
+            selection = random.randrange(1, self.CUSTOMER_POOL_SIZE, 1)
+            cust= self.customer_pool[selection]
+            
+            #log for debugging
+            self.cust_log(cust)
+
+            #increase the experience by ?
+            cust.expr = cust.expr + random.random() / 100
+            
+            #update the times
+            cust.first_entry_time = -1
+            cust.final_exit_time = -1
+            cust.waiting_time = 0
+            
+            return cust
+            
 
         job_arr = [0] * self.NUM_SERVER
         while(sum(job_arr) != 2): #loop till the new customer has atleast 1 job
@@ -310,6 +335,10 @@ class BasicSimulate:
     def print_customer_pool(self):
         for cust_id in self.customer_pool.keys():
             self.customer_pool[cust_id].print_customer()
+
+
+    def cust_log(self, cust):
+        print 'id : %d, expr : %f, entered : %f, exited : %f,  waiting time : %f' % (cust.cust_id, cust.expr, cust.first_entry_time, cust.final_exit_time, cust.waiting_time)
 
 
 if __name__ == '__main__':

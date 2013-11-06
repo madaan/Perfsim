@@ -12,7 +12,9 @@ class Config:
         #Read the system parameters :
         self.NUM_SERVER = int(config.get('system', 'NUM_SERVER'))
         self.ARRIVAL_DIST = config.get('system', 'ARRIVAL_DIST')
-        self.ARRIVAL_DIST_MEAN = config.get('system', 'ARRIVAL_DIST_RATE')
+        self.ARRIVAL_DIST_MEAN = float(config.get('system', 'ARRIVAL_DIST_RATE'))
+        self.NUM_STEPS = int(config.get('system', 'NUM_STEPS'))
+        self.CUSTOMER_POOL_SIZE = int(config.get('system', 'CUSTOMER_POOL_SIZE'))
 
         '''
         {

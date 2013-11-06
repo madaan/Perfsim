@@ -11,6 +11,8 @@
 
 class Scheduler:
 
+    NO_JOBS_LEFT_EXCEPTION = -1
+    '''An ensemble of scheduling algorithms. Each function strictly returns the number of the server which should be joined next. Each scheduling algorithm may take varying amount of context information depending on its complexity.''' 
     def naive(self, customer):
         '''Simple scheduler. Returns the next pending job, does not considers th           e state of the queue'''
         '''Returns -1 if a customer is done'''
@@ -19,7 +21,7 @@ class Scheduler:
             next_job = customer.jobs.index(1)
         
         except ValueError:
-            next_job = -1
+            next_job = Scheduler.NO_JOBS_LEFT_EXCEPTION
 
         return next_job
 
@@ -61,7 +63,24 @@ class Scheduler:
         return goodness.index(max(goodness))
 
 
+
+
      
+    def order_based(self, customer, order):
+        '''This schedules the customer based on the order string. The order 
+        string is a string array which lists the order in which the job is to
+        be performed. For example, JOB_ORDER = [3,4,1,2] states that job3 should be executed first and so on
+        '''
+
+        jobs__to_perform = customer.jobs
+        if(sum(jobs__to_perform) == 0): #No jobs left but called scheduler?
+            return Scheduler.NO_JOBS_LEFT_EXCEPTION
+        for job_number in order:
+            if(jobs__to_perform[job_number] == 1):
+                return job_number
+
+
+
     def experience_counts(self, customer, queues, config):
 
         '''
@@ -85,6 +104,8 @@ class Scheduler:
 
         else:
             return self.naive(customer)
+
+
 
 
 
