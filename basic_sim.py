@@ -96,7 +96,7 @@ class BasicSimulate:
         #self.print_customer_pool()
         print 'Average waiting time : ', Stats.average_waiting_time(self.customer_pool)
         print 'Average response time : ', Stats.average_response_time(self.customer_pool) 
-        print 'Throughtput : ', Stats.throughput(self.customer_pool, 0, self.current_time) 
+        print 'Throughput : ', Stats.throughput(self.customer_pool, 0, self.current_time) 
     def handle_arrival(self, arrive_event):
         '''Handles the arrival event'''
 
