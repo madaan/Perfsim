@@ -222,7 +222,6 @@ class Simulate:
             cust.finish_time = self.current_time
             cust.waiting_time = cust.waiting_time + \
                                 cust.finish_time - cust.arrival_time
-        
 
         '''
         print '\tLeaving the queue'
@@ -312,14 +311,18 @@ class Simulate:
             #need to pick a customer from the pool only
             # 1.Randomly get an index for the customer to be entered
             selection = random.randrange(1, self.CUSTOMER_POOL_SIZE, 1)
-            cust= self.customer_pool[selection]
             
+            cust= self.customer_pool[selection]
+            while(sum(cust.jobs) != 0): #till you get a customer who is done
+                selection = random.randrange(1, self.CUSTOMER_POOL_SIZE, 1)
+                cust= self.customer_pool[selection]
             #log for debugging
             #self.cust_log(cust)
 
-            #increase the experience by ?
             if(cust.cust_id == self.track_id and self.track_customer):
                 print '%f %f %f' % (cust.expr, cust.waiting_time, (cust.final_exit_time - cust.first_entry_time))
+            #increase the experience by ?
+            
             cust.expr = cust.expr + random.random() / 100
             
             #update the times

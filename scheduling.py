@@ -43,7 +43,31 @@ class Scheduler:
         '''
         Considers both the length of the queue and the service rate.
         Criteria ->
-            Goodness of a server = 1 / (service_rate + len)
+            Goodness of a server = service_rate / (len)
+        '''
+        INFTY = float('inf')
+        lens = [server.Q.qsize() if customer.jobs[i] == 1 else INFTY for i,server in enumerate(servers)]
+
+        rate = [0] * len(customer.jobs)
+        for i in range(0, len(customer.jobs)):
+            if(customer.jobs[i] == 1):
+                config_key = 'server_' + str(i)
+                dist_rate = float(config.server_config[config_key]['service_dist_rate'])
+                rate[i] = dist_rate
+                
+            else:
+                rate[i] = INFTY
+
+        goodness = [(1.0 * rate[i] / (lens[i])) for i in range(0, len(customer.jobs))]
+
+        return goodness.index(max(goodness))
+
+    def smallest_slowest_queue_next(self, customer, servers, config):
+
+        '''
+        Considers both the length of the queue and the service rate.
+        Criteria ->
+            Goodness of a server = service_rate / (service_rate + len)
         '''
         INFTY = float('inf')
         lens = [server.Q.qsize() if customer.jobs[i] == 1 else INFTY for i,server in enumerate(servers)]
@@ -61,6 +85,7 @@ class Scheduler:
         goodness = [(1.0 / (rate[i] + lens[i])) for i in range(0, len(customer.jobs))]
 
         return goodness.index(max(goodness))
+
 
 
 
