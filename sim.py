@@ -32,6 +32,8 @@ class Simulate:
         #Whether a customer has to be tracked or not
         self.track_customer = True
         self.track_id = 35
+        if(self.track_customer):
+            self.cust_tracking_file = open('experience_waitresp_time.txt', 'w')
 
         self.NUM_SERVER = Simulate.config.NUM_SERVER
         self.NUM_STEPS = Simulate.config.NUM_STEPS
@@ -313,14 +315,14 @@ class Simulate:
             selection = random.randrange(1, self.CUSTOMER_POOL_SIZE, 1)
             
             cust= self.customer_pool[selection]
-            while(sum(cust.jobs) != 0): #till you get a customer who is done
+            while(sum(cust.jobs) != 0 or cust.final_exit_time == -1): #till you get a customer who is done
                 selection = random.randrange(1, self.CUSTOMER_POOL_SIZE, 1)
                 cust= self.customer_pool[selection]
             #log for debugging
             #self.cust_log(cust)
 
             if(cust.cust_id == self.track_id and self.track_customer):
-                print '%f %f %f' % (cust.expr, cust.waiting_time, (cust.final_exit_time - cust.first_entry_time))
+                self.cust_tracking_file.write('%f %f %f\n' % (cust.expr, cust.waiting_time, (cust.final_exit_time - cust.first_entry_time)))
             #increase the experience by ?
             
             cust.expr = cust.expr + random.random() / 100
