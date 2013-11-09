@@ -2,7 +2,7 @@
 from customer import *
 class Stats:
     def average_waiting_time(self, cust_pool):
-        '''Average amount of time that a customer has to wait'''
+        '''Average amount of time that any customer has to wait'''
         total_waiting_time = 0
         for id in cust_pool.keys():
             total_waiting_time = total_waiting_time + cust_pool[id].waiting_time

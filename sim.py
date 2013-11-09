@@ -13,7 +13,7 @@ from stats import Stats
 from server import Server
 #TODO : Find next job for the customer should be a function
 
-class BasicSimulate:
+class Simulate:
 
     current_time = 0
     next_event_time = 0
@@ -24,13 +24,18 @@ class BasicSimulate:
     def __init__(self):
         '''The constructor'''
 
+        self.track_customer = True
         self.num_cust = 0
         self.customer_pool = {}  #should be a class variable, saving typing
         self.timeline = []  #to be used as a heap or a priority queue
         
-        self.NUM_SERVER = BasicSimulate.config.NUM_SERVER
-        self.NUM_STEPS = BasicSimulate.config.NUM_STEPS
-        self.CUSTOMER_POOL_SIZE = BasicSimulate.config.CUSTOMER_POOL_SIZE
+        #Whether a customer has to be tracked or not
+        self.track_customer = True
+        self.track_id = 35
+
+        self.NUM_SERVER = Simulate.config.NUM_SERVER
+        self.NUM_STEPS = Simulate.config.NUM_STEPS
+        self.CUSTOMER_POOL_SIZE = Simulate.config.CUSTOMER_POOL_SIZE
         self.SERVER_BUSY = [] #This is required to ensure that a process does not enter the queue if there is no one else in the system
         self.server = []
         for i in range(0, self.NUM_SERVER):
@@ -38,8 +43,12 @@ class BasicSimulate:
             #self.SERVER_BUSY.append(False)
             self.server.append(Server(10, .4))
 
+        #Set true if you want to see tons of output
         self.verbose = False
+        
+        #Set false if you want the screen to hold
         self.do_wait = False
+        
         self.sim_start()
         self.timeline_processor()
         
@@ -94,9 +103,15 @@ class BasicSimulate:
             if(self.do_wait):
                 time.sleep(1)
         #self.print_customer_pool()
+        self.dump_stats()
+
+    def dump_stats(self):
         print 'Average waiting time : ', Stats.average_waiting_time(self.customer_pool)
         print 'Average response time : ', Stats.average_response_time(self.customer_pool) 
         print 'Throughput : ', Stats.throughput(self.customer_pool, 0, self.current_time) 
+        for i,server in enumerate(self.server):
+            print 'Server : ',i
+            server.printQlog()
     def handle_arrival(self, arrive_event):
         '''Handles the arrival event'''
 
@@ -125,6 +140,7 @@ class BasicSimulate:
         job_requested = self.get_next_job(cust)
 
         if(self.server[job_requested].SERVER_BUSY): 
+            self.server[job_requested].quelenlog(self.current_time)
             self.add_to_queue(self.server[job_requested].Q, cust)
         else: #No need to add to queue, but should mark the server as busy
             self.server[job_requested].SERVER_BUSY = True
@@ -183,6 +199,8 @@ class BasicSimulate:
 
             self.create_finish_event(self.current_time, EventType.type_from_num(next_job), next_customer)
 
+            #log the queue length before changing it
+            self.server[qno].quelenlog(self.current_time)
             #Now remove it from the queue and send it to service
             self.remove_from_queue(Q)
 
@@ -268,7 +286,7 @@ class BasicSimulate:
 
         if(sum(customer.jobs) == 0): 
             return -1
-        return Scheduler.order_based(customer, [3,1,2])
+        return Scheduler.experience_counts(customer, self.server, self.config)
 
     def get_interrupt_time(self, serving_server): #Talk of variable names
         '''This returns the time for which a customer might have to wait due to servers taking interrupts (A phone call, a cup of tea and the likes)''' 
@@ -283,26 +301,6 @@ class BasicSimulate:
 
 
 
-
-
-    def printQ(self):
-        '''Prints the service queue'''
-
-        for i in range(0, self.NUM_SERVER):
-            print 'Queue', i
-            Q = self.server[i].Q
-            print
-            for ele in Q.queue:
-                print '|| ',ele.cust_id,'(', ele.jobs, ') || <- ',
-            print 'X'
-
-
-    def print_timeline(self):
-        '''A function to print the timeline'''
-        print
-        for (time,event) in self.timeline:
-            print '(%f, %d, %s, %s) <- ' % (time, event.customer.cust_id, EventType.name(event.event_type), ' '.join(str(event.customer.jobs))),
-        print 'X'
 
 
     def create_customer(self):
@@ -320,6 +318,8 @@ class BasicSimulate:
             #self.cust_log(cust)
 
             #increase the experience by ?
+            if(cust.cust_id == self.track_id and self.track_customer):
+                print '%f %f %f' % (cust.expr, cust.waiting_time, (cust.final_exit_time - cust.first_entry_time))
             cust.expr = cust.expr + random.random() / 100
             
             #update the times
@@ -345,6 +345,26 @@ class BasicSimulate:
 
 
 
+    def printQ(self):
+        '''Prints the service queue'''
+
+        for i in range(0, self.NUM_SERVER):
+            print 'Queue', i
+            Q = self.server[i].Q
+            print
+            for ele in Q.queue:
+                print '|| ',ele.cust_id,'(', ele.jobs, ') || <- ',
+            print 'X'
+
+
+    def print_timeline(self):
+        '''A function to print the timeline'''
+        print
+        for (time,event) in self.timeline:
+            print '(%f, %d, %s, %s) <- ' % (time, event.customer.cust_id, EventType.name(event.event_type), ' '.join(str(event.customer.jobs))),
+        print 'X'
+
+
     def print_customer_pool(self):
         '''prints customer pool'''
         for cust_id in self.customer_pool.keys():
@@ -358,4 +378,4 @@ class BasicSimulate:
 
 
 if __name__ == '__main__':
-    b = BasicSimulate()
+    b = Simulate()

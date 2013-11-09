@@ -8,5 +8,20 @@ class Server:
         self.served = 0 #number of users served
         self.break_time = break_time
         self.SERVER_BUSY = False
+        
+        self.prev_time = 0
+        self.qlendict = {}
+    def quelenlog(self, ctime):
+        qsize = self.Q.qsize()
+        if(qsize in self.qlendict):
+            self.qlendict[qsize] = self.qlendict[qsize] + ctime - self.prev_time
+            self.prev_time = ctime
+        else:
+            self.qlendict[qsize] = ctime - self.prev_time
+
+
+    def printQlog(self):
+        for qlen in self.qlendict:
+            print '>', qlen, self.qlendict[qlen]
 
 
