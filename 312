@@ -1,0 +1,44 @@
+5
+Average waiting time :  1.45278961152
+Average response time :  243.636037766
+Throughput :  0.00415861155595
+1005
+Average waiting time :  0.42887992064
+Average response time :  2.00862766501
+Throughput :  0.324291466364
+2005
+Average waiting time :  0.436388270335
+Average response time :  2.05960281474
+Throughput :  0.332625009916
+3005
+Average waiting time :  0.878666713056
+Average response time :  2.7454667275
+Throughput :  0.307661196392
+4005
+Average waiting time :  0.692658391466
+Average response time :  2.39679894151
+Throughput :  0.31930025195
+5005
+Average waiting time :  0.322936127469
+Average response time :  1.78404932254
+Throughput :  0.323049379939
+6005
+Average waiting time :  1.0577561624
+Average response time :  2.78317672111
+Throughput :  0.316533994529
+7005
+Average waiting time :  1.4424264521
+Average response time :  3.21018553028
+Throughput :  0.342488002175
+8005
+Average waiting time :  0.924282523736
+Average response time :  2.7172015067
+Throughput :  0.364239729792
+9005
+Average waiting time :  1.35378599653
+Average response time :  3.07638441202
+Throughput :  0.334677367055
+10005
+Average waiting time :  0.668946879311
+Average response time :  2.24752655802
+Throughput :  0.326743935303

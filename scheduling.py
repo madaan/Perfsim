@@ -76,8 +76,8 @@ class Scheduler:
         if(sum(jobs__to_perform) == 0): #No jobs left but called scheduler?
             return Scheduler.NO_JOBS_LEFT_EXCEPTION
         for job_number in order:
-            if(jobs__to_perform[job_number] == 1):
-                return job_number
+            if(jobs__to_perform[job_number - 1] == 1):
+                return job_number - 1
 
 
 
@@ -112,6 +112,7 @@ class Scheduler:
 
 
 
+    order_based = classmethod(order_based)
     naive = classmethod(naive)
     smallest_queue_next = classmethod(smallest_queue_next)
     smallest_fastest_queue_next = classmethod(smallest_fastest_queue_next)
