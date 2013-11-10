@@ -58,7 +58,7 @@ class Scheduler:
             else:
                 rate[i] = INFTY
 
-        goodness = [(1.0 * rate[i] / (lens[i])) for i in range(0, len(customer.jobs))]
+        goodness = [(1.0 * rate[i] / (lens[i] + 1)) for i in range(0, len(customer.jobs))]
 
         return goodness.index(max(goodness))
 

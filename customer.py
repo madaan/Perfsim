@@ -19,9 +19,26 @@ class Customer:
         '''
         mu = .2
         variate = .1
-
         self.expr = random.normalvariate(mu, variate)
+        
+        '''
+        Patience : Every customer has a level of patience. The customer
+        enters the bank, looks at the queue status for the jobs that he has
+        to perform, and decides to either enter the bank or leaves at that
+        moment. Note that right now, if a customer enters the bank, he performs
+        the job with certainity. 
+        
+        Patience : Right now the cumulative length of queues that a customer can
+        handle.
 
+        Massive TODO : Include timeouts.  
+        '''
+        mu = 20
+        variate = 2
+        self.patience = random.normalvariate(mu, variate)
+
+
+    
         Customer.cust_count = Customer.cust_count + 1
         self.jobs = jobs
         self.waiting_time = 0
