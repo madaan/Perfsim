@@ -20,8 +20,8 @@ class Server:
             self.qlendict[qsize] = ctime - self.prev_time
 
 
-    def printQlog(self):
+    def printQlog(self, ofile):
         for qlen in self.qlendict:
-            print '>', qlen, self.qlendict[qlen]
+            ofile.write('> %d %f\n'% (qlen, self.qlendict[qlen]))
 
 

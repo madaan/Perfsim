@@ -115,14 +115,17 @@ class Simulate:
         self.dump_stats()
 
     def dump_stats(self):
+        TRANSIENT = 100
         #print 'Average waiting time : ', Stats.average_waiting_time(self.customer_pool)
         #print 'Average response time : ', Stats.average_response_time(self.customer_pool) 
         #print 'Throughput : ', Stats.throughput(self.customer_pool, 0, self.current_time) 
-        print 'Average waiting time : ', 1.0 * sum(self.waiting_time_list) / len(self.waiting_time_list)
-        print 'Average response time : ', 1.0 * sum(self.response_time_list) / len(self.response_time_list)
+        print 'Throughput : ',  1.0 * (len(self.waiting_time_list[TRANSIENT:]) / self.current_time)
+        print 'Average waiting time : ', 1.0 * sum(self.waiting_time_list[TRANSIENT:]) / len(self.waiting_time_list[TRANSIENT:])
+        print 'Average response time : ', 1.0 * sum(self.response_time_list[TRANSIENT:]) / len(self.response_time_list[TRANSIENT:])
+        len_dist = open('qlen_dist', 'w')
         for i,server in enumerate(self.server):
-            print 'Server : ',i
-            server.printQlog()
+            len_dist.write('Server : %d\n' % (i))
+            server.printQlog(len_dist)
     def handle_arrival(self, arrive_event):
         '''Handles the arrival event'''
 
@@ -220,6 +223,11 @@ class Simulate:
             next_job = qno
 
             #Also calculate the waiting time for this customer and add it ot the waiting_time list
+
+            next_customer.waiting_time = self.current_time - next_customer.arrival_time + next_customer.waiting_time
+            
+            
+
             self.waiting_time_list.append(self.current_time - next_customer.arrival_time)
             self.create_finish_event(self.current_time, EventType.type_from_num(next_job), next_customer)
 
@@ -346,8 +354,6 @@ class Simulate:
             not_enough_patience = (self.sum_qlens() > cust.patience)
             
             while((still_in_system or not_enough_patience) and num_tries > 0):
-                if(not_enough_patience):
-                    print 'here %d' % self.sum_qlens()
                 selection = random.randrange(1, self.CUSTOMER_POOL_SIZE, 1)
                 cust = self.customer_pool[selection]
                 still_in_system = (cust.final_exit_time != -1)
@@ -368,6 +374,9 @@ class Simulate:
             #log for debugging
             #self.cust_log(cust)
 
+            if(cust.cust_id == self.track_id):
+                for i in range(0, self.NUM_SERVER):
+                    cust.jobs[i] = 1
             #increase the experience by ?
             
             cust.expr = cust.expr + random.random() / 100
