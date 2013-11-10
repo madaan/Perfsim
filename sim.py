@@ -56,6 +56,8 @@ class Simulate:
 
         self.waiting_time_list = []
 
+        self.overall_waiting_time = []
+
         self.MIN_JOBS = 1
 
         self.sim_start()
@@ -115,17 +117,21 @@ class Simulate:
         self.dump_stats()
 
     def dump_stats(self):
-        TRANSIENT = 100
+        TRANSIENT = 10
         #print 'Average waiting time : ', Stats.average_waiting_time(self.customer_pool)
         #print 'Average response time : ', Stats.average_response_time(self.customer_pool) 
         #print 'Throughput : ', Stats.throughput(self.customer_pool, 0, self.current_time) 
+
+        print len(self.overall_waiting_time), len(self.response_time_list)
         print 'Throughput : ',  1.0 * (len(self.waiting_time_list[TRANSIENT:]) / self.current_time)
-        print 'Average waiting time : ', 1.0 * sum(self.waiting_time_list[TRANSIENT:]) / len(self.waiting_time_list[TRANSIENT:])
+        print 'Average waiting time : ', 1.0 * sum(self.overall_waiting_time[TRANSIENT:]) / len(self.overall_waiting_time[TRANSIENT:])
+        print 'Average waiting time (Per queue): ', 1.0 * sum(self.waiting_time_list[TRANSIENT:]) / len(self.waiting_time_list[TRANSIENT:])
         print 'Average response time : ', 1.0 * sum(self.response_time_list[TRANSIENT:]) / len(self.response_time_list[TRANSIENT:])
         len_dist = open('qlen_dist', 'w')
         for i,server in enumerate(self.server):
             len_dist.write('Server : %d\n' % (i))
             server.printQlog(len_dist)
+
     def handle_arrival(self, arrive_event):
         '''Handles the arrival event'''
 
@@ -146,7 +152,12 @@ class Simulate:
         if(cust.first_entry_time == -1): #First entry in the system
             if(cust.cust_id == self.track_id and self.track_customer):    
                 self.cust_tracking_file.write('%d entered at %f, expr : %f\n' % (cust.cust_id, self.current_time, cust.expr))
+                self.cust_tracking_file.write(str(cust.jobs) +'\n' )
             cust.first_entry_time = self.current_time
+
+        #note the arrival time for this customer for waiting time calculation
+
+        cust.arrival_time = self.current_time
 
         #Add the customer to the customer pool
         self.customer_pool[cust.cust_id] = cust
@@ -155,27 +166,33 @@ class Simulate:
         #If a job has arrived here, there must be some job pending
         job_requested = self.get_next_job(cust)
 
+
         if(self.server[job_requested].SERVER_BUSY): 
             self.server[job_requested].quelenlog(self.current_time)
-            self.add_to_queue(self.server[job_requested].Q, cust)
+            self.add_to_queue(self.server[job_requested].Q, job_requested, cust)
+
         else: #No need to add to queue, but should mark the server as busy
+            if(cust.cust_id == self.track_id and self.track_customer):    
+                self.cust_tracking_file.write('started service at %d at %f\n' % (job_requested, self.current_time))
             self.server[job_requested].SERVER_BUSY = True
             #since the server is not busy, it will immediately start processing the event
             #zero should be added to calculate the right average
-            self.waiting_time_list.append(0)
+            cust.finish_time = self.current_time
+            self.waiting_time_list.append(cust.finish_time - cust.arrival_time) #i.e. 0
             self.create_finish_event(self.current_time, EventType.type_from_num(job_requested), cust) 
 
 
-    def add_to_queue(self, Q, cust):
+    def add_to_queue(self, Q, job_requested, cust):
         '''Add customer to given service queue'''
 
-        cust.arrival_time = self.current_time
         '''
         print '\tEntering the queue'
         print 'Customer : ', cust.cust_id
         print 'Arrival Time : ', cust.arrival_time
         '''
         Q.put(cust)
+        if(cust.cust_id == self.track_id and self.track_customer):    
+            self.cust_tracking_file.write('Entered queue %d at %f\n' % (job_requested, self.current_time))
         #A departure cannot be scheduled right now because you don't really know how long you'll have to wait
 
 
@@ -191,15 +208,20 @@ class Simulate:
         self.server[qno].served = self.server[qno].served + 1
         #Mark the bit vector of the customer to reflect the change
         cust.jobs[qno] = 0 #1 -> 0, job over
-        
+        if(cust.cust_id == self.track_id and self.track_customer):    
+            self.cust_tracking_file.write('Finished service at %d at %f\n' % (qno, self.current_time))
         
         if(sum(cust.jobs) > 0): 
+ 
             #not yet done, need to find the next pending job
             next_job = self.get_next_job(cust)
             if(self.server[next_job].SERVER_BUSY):
-                self.add_to_queue(self.server[next_job].Q, cust)
+                cust.arrival_time = self.current_time
+                self.add_to_queue(self.server[next_job].Q, next_job, cust)
             else:
                 self.server[next_job].SERVER_BUSY = True
+                if(cust.cust_id == self.track_id and self.track_customer):    
+                    self.cust_tracking_file.write('started service at %d at %f\n' % (next_job, self.current_time))
                 self.create_finish_event(self.current_time, EventType.type_from_num(next_job), cust) 
 
         else:
@@ -207,6 +229,7 @@ class Simulate:
             if(cust.cust_id == self.track_id):
                 self.cust_tracking_file.write('%d exited at %f, expr : %f\n' % (cust.cust_id, self.current_time, cust.expr))
                 self.cust_tracking_file.write('%f %f %f\n' % (cust.expr, cust.waiting_time, (self.current_time - cust.first_entry_time)))
+            self.overall_waiting_time.append(cust.waiting_time)
             self.response_time_list.append(self.current_time - cust.first_entry_time)
             cust.final_exit_time = -1
 
@@ -225,6 +248,9 @@ class Simulate:
             #Also calculate the waiting time for this customer and add it ot the waiting_time list
 
             next_customer.waiting_time = self.current_time - next_customer.arrival_time + next_customer.waiting_time
+            if(next_customer.cust_id == self.track_id):
+                print 'Waiting time increased to %f' % next_customer.waiting_time
+                print 'Response time till now : %f' % (self.current_time - next_customer.first_entry_time)
             
             
 
@@ -234,7 +260,7 @@ class Simulate:
             #log the queue length before changing it
             self.server[qno].quelenlog(self.current_time)
             #Now remove it from the queue and send it to service
-            self.remove_from_queue(Q)
+            self.remove_from_queue(Q, qno)
 
             
         #QSize already 0? Can finish here
@@ -246,12 +272,14 @@ class Simulate:
 
 
 
-    def remove_from_queue(self, Q):
+    def remove_from_queue(self, Q, qno):
 
         '''Removes the top most executing process from the queue. Also schedules the next departure'''
        
         if(Q.qsize() > 0):
-            Q.get()
+            next_customer  = Q.get()
+            if(next_customer.cust_id == self.track_id and self.track_customer):    
+                self.cust_tracking_file.write('started service at %d at %f\n' % (qno, self.current_time))
 
         '''
         print '\tLeaving the queue'
@@ -315,7 +343,8 @@ class Simulate:
 
         if(sum(customer.jobs) == 0): 
             return -1
-        return Scheduler.experience_counts(customer, self.server, self.config)
+        return Scheduler.naive(customer)
+        #return Scheduler.experience_counts(customer, self.server, self.config)
 
     def get_interrupt_time(self, serving_server): #Talk of variable names
         '''This returns the time for which a customer might have to wait due to servers taking interrupts (A phone call, a cup of tea and the likes)''' 
@@ -349,9 +378,23 @@ class Simulate:
             num_tries = 10 #else no one is ready yet
             selection = random.randrange(1, self.CUSTOMER_POOL_SIZE, 1)
             
+
+            tracked = self.customer_pool[self.track_id]
+
+            if(tracked.first_entry_time == -1 and tracked.patience < self.sum_qlens()):
+                for i in range(0, self.NUM_SERVER):
+                    tracked.jobs[i] = 1
+                tracked.expr = tracked.expr + random.random() / 1000
+                tracked.first_entry_time = -1
+                tracked.final_exit_time = -1
+                tracked.waiting_time = 0
+                return tracked
+
+
             cust= self.customer_pool[selection]
-            still_in_system = (cust.final_exit_time != -1)
+            still_in_system = (cust.first_entry_time != -1)
             not_enough_patience = (self.sum_qlens() > cust.patience)
+            
             
             while((still_in_system or not_enough_patience) and num_tries > 0):
                 selection = random.randrange(1, self.CUSTOMER_POOL_SIZE, 1)
