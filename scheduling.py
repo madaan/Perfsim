@@ -9,6 +9,8 @@
 
 '''
 
+import numpy as np
+
 class Scheduler:
 
     NO_JOBS_LEFT_EXCEPTION = -1
@@ -35,7 +37,7 @@ class Scheduler:
         lens = [server.Q.qsize() if customer.jobs[i] == 1 else INFTY for i,server in enumerate(servers)]
         
         #Now return the queue number of the queue which is the shortest
-        return lens.index(min(lens))
+        return lens.index(np.nanmin(lens))
 
 
     def smallest_fastest_queue_next(self, customer, servers, config):
@@ -58,9 +60,10 @@ class Scheduler:
             else:
                 rate[i] = INFTY
 
-        goodness = [(1.0 * rate[i] / (lens[i] + 1)) for i in range(0, len(customer.jobs))]
+        goodness = [(10.0 * rate[i] / (lens[i] + 1)) for i in range(0, len(customer.jobs))]
 
-        return goodness.index(max(goodness))
+        result = goodness.index(np.nanmax(goodness))
+        return result
 
     def smallest_slowest_queue_next(self, customer, servers, config):
 
@@ -84,7 +87,8 @@ class Scheduler:
 
         goodness = [(1.0 / (rate[i] + lens[i])) for i in range(0, len(customer.jobs))]
 
-        return goodness.index(max(goodness))
+
+        return goodness.index(np.nanmax(goodness))
 
 
 
@@ -118,8 +122,8 @@ class Scheduler:
         algorithm. The most inexperienced of the users will naively do the task 1
         after another
         '''
-        SMALLEST_FASTEST_THRESHOLD = 0.80
-        SMALLEST_THRESHOLD = 0.5
+        SMALLEST_FASTEST_THRESHOLD = 5.0
+        SMALLEST_THRESHOLD = 2.55555
 
         if(customer.expr >= SMALLEST_FASTEST_THRESHOLD):
             return self.smallest_fastest_queue_next(customer, servers, config)
@@ -140,6 +144,22 @@ class Scheduler:
     order_based = classmethod(order_based)
     naive = classmethod(naive)
     smallest_queue_next = classmethod(smallest_queue_next)
+    smallest_slowest_queue_next= classmethod(smallest_slowest_queue_next)
     smallest_fastest_queue_next = classmethod(smallest_fastest_queue_next)
     experience_counts = classmethod(experience_counts)
-            
+
+
+if __name__ == '__main__':
+    from customer import *
+    from server import *
+    server = []
+    l = [11, 12, 1, 2, 19, 11]
+    for i in range(0, 6):
+        server.append(Server(10, .4))
+        for j in range(0, l[i]):
+            server[i].Q.put(j)
+    
+    from configuration import *
+    c = Customer([1, 0, 1, 1, 1, 1])
+    cfg = Config('perfsim.config')
+    Scheduler.smallest_fastest_queue_next(c, server, cfg)

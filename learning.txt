@@ -1,6 +1,0 @@
-1. Experience counts will not give expected results until there is a 
-skew in service rates. This is becuase in our case, with higher experience, 
-a person will tend to go into a queue which is faster and smaller. 
-Clearly, if all the servers have almost equal service rates, the notion of 
-faster will not be there, and thus, an experienced user will not benefit at all.
-The graph plotted from g1, g2 shows this.

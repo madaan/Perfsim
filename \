@@ -29,7 +29,7 @@ class Simulate:
         self.timeline = []  #to be used as a heap or a priority queue
         
         #Whether a customer has to be tracked or not
-        self.track_customer = True
+        self.track_customer = False
         self.track_id = 35
         if(self.track_customer):
             self.cust_tracking_file = open('experience_waitresp_time.txt', 'w')
