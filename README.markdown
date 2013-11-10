@@ -15,6 +15,9 @@
 	8. Essential statistics are being calculated.
 	9. Simple plotting is being done.
 	10. Lots of attention is paid to the design of the simulator.
+    11. Every customer has a level of patience. The user enters the system and if the
+    total number of users in the system exceed the patience level, the user does not join.
+
 
 ##How are we modelling interrupts?
 
