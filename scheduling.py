@@ -118,7 +118,7 @@ class Scheduler:
         algorithm. The most inexperienced of the users will naively do the task 1
         after another
         '''
-        SMALLEST_FASTEST_THRESHOLD = 0.75
+        SMALLEST_FASTEST_THRESHOLD = 0.60
         SMALLEST_THRESHOLD = 0.5
 
         if(customer.expr >= SMALLEST_FASTEST_THRESHOLD):
