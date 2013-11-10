@@ -122,8 +122,8 @@ class Scheduler:
         algorithm. The most inexperienced of the users will naively do the task 1
         after another
         '''
-        SMALLEST_FASTEST_THRESHOLD = 5.0
-        SMALLEST_THRESHOLD = 2.55555
+        SMALLEST_FASTEST_THRESHOLD = 0.80
+        SMALLEST_THRESHOLD = 0.6255555
 
         if(customer.expr >= SMALLEST_FASTEST_THRESHOLD):
             return self.smallest_fastest_queue_next(customer, servers, config)

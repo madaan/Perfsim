@@ -339,8 +339,8 @@ class Simulate:
         if(sum(customer.jobs) == 0): 
             return -1
         
-        #return Scheduler.smallest_slowest_queue_next(customer, self.server, self.config)
-        return Scheduler.smallest_fastest_queue_next(customer, self.server, self.config)
+        return Scheduler.smallest_slowest_queue_next(customer, self.server, self.config)
+        #return Scheduler.smallest_fastest_queue_next(customer, self.server, self.config)
         #return Scheduler.smallest_queue_next(customer, self.server)
         #return Scheduler.naive(customer)
         #return Scheduler.experience_counts(customer, self.server, self.config)
