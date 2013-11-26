@@ -49,16 +49,11 @@ class Simulate:
         
         #Set false if you want the screen to hold
         self.do_wait = False
-        
-
         self.response_time_list = []
-
         self.waiting_time_list = []
-
         self.overall_waiting_time = []
-
-        self.MIN_JOBS = 1
-
+        self.MIN_JOBS = 5
+        self.step = 0
         self.sim_start()
         self.timeline_processor()
         
@@ -70,13 +65,6 @@ class Simulate:
         #Now create an event with this customer
         self.create_arrival_event(self.current_time, cust)
         
-        #get the job which he will first need to finish
-        #next_job = self.get_next_job(cust)
-
-        #self.create_finish_event(atime + self.current_time, EventType.type_from_num(next_job), cust)
-        #heappush(self.timelinec, (first_service_time, event))
-        #Inserting tuple at the moment
-
 
     def timeline_processor(self):
         '''The function which pulls out events from the timeline and processes them'''
@@ -84,9 +72,9 @@ class Simulate:
         import time
         import os
         step = 0
-        while(len(self.timeline) > 0 and step < self.NUM_STEPS): 
+        while(len(self.timeline) > 0 and self.step < self.NUM_STEPS): 
 
-            step = step + 1
+            self.step = self.step + 1
             if(self.verbose):
                 print 'Finished : ', step
                 os.system('clear')
@@ -116,11 +104,7 @@ class Simulate:
         self.dump_stats()
 
     def dump_stats(self):
-        TRANSIENT = 10
-        #print 'Average waiting time : ', Stats.average_waiting_time(self.customer_pool)
-        #print 'Average response time : ', Stats.average_response_time(self.customer_pool) 
-        #print 'Throughput : ', Stats.throughput(self.customer_pool, 0, self.current_time) 
-
+        TRANSIENT = 1000
         print len(self.overall_waiting_time), len(self.response_time_list)
         print 'Throughput : ',  1.0 * (len(self.waiting_time_list[TRANSIENT:]) / self.current_time)
         print 'Average waiting time : ', 1.0 * sum(self.overall_waiting_time[TRANSIENT:]) / len(self.overall_waiting_time[TRANSIENT:])
@@ -226,7 +210,7 @@ class Simulate:
             #Need to update the final finish time of the customer
             if(cust.cust_id == self.track_id and self.track_customer):
                 self.cust_tracking_file.write('%d exited at %f, expr : %f\n' % (cust.cust_id, self.current_time, cust.expr))
-                self.cust_tracking_file.write('%f %f %f\n' % (cust.expr, cust.waiting_time, (self.current_time - cust.first_entry_time)))
+                self.cust_tracking_file.write('%f %f %f %f\n' % (self.current_time, cust.expr, cust.waiting_time, (self.current_time - cust.first_entry_time)))
             self.overall_waiting_time.append(cust.waiting_time)
             self.response_time_list.append(self.current_time - cust.first_entry_time)
             cust.final_exit_time = -1
@@ -275,7 +259,6 @@ class Simulate:
             next_customer  = Q.get()
             if(next_customer.cust_id == self.track_id and self.track_customer):    
                 self.cust_tracking_file.write('started service at %d at %f\n' % (qno, self.current_time))
-
         '''
         print '\tLeaving the queue'
         print 'Customer : ', cust.cust_id
@@ -301,9 +284,6 @@ class Simulate:
         event =  Event(customer, EventType.ARRIVAL,next_arrival_time)
         heappush(self.timeline, (next_arrival_time, event))
         return next_arrival_time
-
-
-
 
 
     def create_finish_event(self, time_from, etype, customer):
@@ -339,11 +319,11 @@ class Simulate:
         if(sum(customer.jobs) == 0): 
             return -1
         
-        return Scheduler.smallest_slowest_queue_next(customer, self.server, self.config)
+        #return Scheduler.smallest_slowest_queue_next(customer, self.server, self.config)
         #return Scheduler.smallest_fastest_queue_next(customer, self.server, self.config)
         #return Scheduler.smallest_queue_next(customer, self.server)
         #return Scheduler.naive(customer)
-        #return Scheduler.experience_counts(customer, self.server, self.config)
+        return Scheduler.experience_counts(customer, self.server, self.config)
 
     def get_interrupt_time(self, serving_server): #Talk of variable names
         '''This returns the time for which a customer might have to wait due to servers taking interrupts (A phone call, a cup of tea and the likes)''' 
@@ -352,12 +332,6 @@ class Simulate:
             return serving_server.break_time
         else:
             return 0
-
-
-
-
-
-
 
 
     def sum_qlens(self):
@@ -378,6 +352,7 @@ class Simulate:
             selection = random.randrange(1, self.CUSTOMER_POOL_SIZE, 1)
             
 
+            '''
             if(self.track_customer):
                 tracked = self.customer_pool[self.track_id]
 
@@ -390,7 +365,7 @@ class Simulate:
                     tracked.waiting_time = 0
                     return tracked
 
-
+            '''
             cust= self.customer_pool[selection]
             still_in_system = (cust.first_entry_time != -1)
             not_enough_patience = (self.sum_qlens() > cust.patience)
@@ -418,7 +393,10 @@ class Simulate:
             #self.cust_log(cust)
 
             #increase the experience by ?
-            cust.expr = cust.expr + random.random() / 100
+            if(cust.cust_id == self.track_id and self.track_customer and self.step < 20000):  #Remove transient
+                cust.expr = cust.expr #forgive me.
+            else:
+                cust.expr = cust.expr + random.random() / 100
             
             #update the times
             cust.first_entry_time = -1
@@ -472,7 +450,6 @@ class Simulate:
     def cust_log(self, cust):
         '''logs customer information to stdout'''
         print 'id : %d, expr : %f, entered : %f, exited : %f,  waiting time : %f' % (cust.cust_id, cust.expr, cust.first_entry_time, cust.final_exit_time, cust.waiting_time)
-
 
 
 if __name__ == '__main__':

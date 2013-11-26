@@ -40,4 +40,3 @@ class Stats:
     average_waiting_time = classmethod(average_waiting_time)
     average_response_time = classmethod(average_response_time)
     throughput = classmethod(throughput)
-

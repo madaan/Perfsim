@@ -54,8 +54,13 @@ class Scheduler:
         for i in range(0, len(customer.jobs)):
             if(customer.jobs[i] == 1):
                 config_key = 'server_' + str(i)
+                dist = (config.server_config[config_key]['service_dist'])
                 dist_rate = float(config.server_config[config_key]['service_dist_rate'])
-                rate[i] = dist_rate
+                
+                if(dist == 'E'):
+                    rate[i] = dist_rate
+                elif(dist == 'D'):
+                    rate[i] = 1.0  / dist_rate
                 
             else:
                 rate[i] = INFTY
@@ -122,8 +127,8 @@ class Scheduler:
         algorithm. The most inexperienced of the users will naively do the task 1
         after another
         '''
-        SMALLEST_FASTEST_THRESHOLD = 0.80
-        SMALLEST_THRESHOLD = 0.6255555
+        SMALLEST_FASTEST_THRESHOLD = 0.85
+        SMALLEST_THRESHOLD = 0.5955555
 
         if(customer.expr >= SMALLEST_FASTEST_THRESHOLD):
             return self.smallest_fastest_queue_next(customer, servers, config)
