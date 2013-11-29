@@ -21,6 +21,11 @@ class Customer:
         variate = .1
         self.expr = random.normalvariate(mu, variate)
         
+        
+        self.timeout = 5
+        '''
+        Timeout dictates the time that can be spent by a customer wihtout getting served. If a customer has already spent 'timeout' timeunits before getting a job done, he leaves the system
+        '''
         '''
         Patience : Every customer has a level of patience. The customer
         enters the bank, looks at the queue status for the jobs that he has

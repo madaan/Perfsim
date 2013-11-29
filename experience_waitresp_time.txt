@@ -1,0 +1,522 @@
+35 entered at 1.122411, expr : 0.218500
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 1.122411
+started service at 0 at 9.411134
+Finished service at 0 at 9.411134
+35 exited at 9.411134, expr : 0.218500
+9.411134 0.218500 8.288723 8.288723
+35 entered at 151.156212, expr : 0.218500
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 151.156212
+started service at 0 at 155.220099
+Finished service at 0 at 155.755072
+Entered queue 1 at 155.755072
+started service at 1 at 157.137606
+Finished service at 1 at 157.137606
+35 exited at 157.137606, expr : 0.218500
+157.137606 0.218500 5.446421 5.981394
+35 entered at 256.791645, expr : 0.317071
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 256.791645
+started service at 0 at 262.975487
+Finished service at 0 at 262.975487
+35 exited at 262.975487, expr : 0.317071
+262.975487 0.317071 6.183842 6.183842
+35 entered at 293.479577, expr : 0.317169
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 293.479577
+started service at 0 at 299.311730
+Finished service at 0 at 299.311730
+35 exited at 299.311730, expr : 0.317169
+299.311730 0.317169 5.832153 5.832153
+35 entered at 300.638704, expr : 0.345587
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 300.638704
+started service at 0 at 309.260945
+Finished service at 0 at 309.260945
+35 exited at 309.260945, expr : 0.345587
+309.260945 0.345587 8.622241 8.622241
+35 entered at 343.063663, expr : 0.415152
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 343.063663
+35 entered at 343.155411, expr : 0.432297
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 343.155411
+started service at 0 at 348.819519
+Finished service at 0 at 348.819519
+35 exited at 348.819519, expr : 0.432297
+348.819519 0.432297 5.664108 5.664108
+started service at 0 at 348.819519
+Finished service at 0 at 348.819519
+35 exited at 348.819519, expr : 0.432297
+348.819519 0.432297 11.328215 5.664108
+35 entered at 349.357990, expr : 0.473624
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 349.357990
+started service at 0 at 354.925898
+Finished service at 0 at 354.925898
+35 exited at 354.925898, expr : 0.473624
+354.925898 0.473624 5.567908 5.567908
+35 entered at 357.263743, expr : 0.552429
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 357.263743
+started service at 0 at 362.593797
+Finished service at 0 at 362.593797
+35 exited at 362.593797, expr : 0.552429
+362.593797 0.552429 5.330054 5.330054
+35 entered at 427.819415, expr : 0.619518
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 427.819415
+started service at 0 at 436.430383
+Finished service at 0 at 436.430383
+35 exited at 436.430383, expr : 0.619518
+436.430383 0.619518 8.610967 8.610967
+35 entered at 514.664036, expr : 0.682263
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 514.664036
+started service at 0 at 520.444909
+Finished service at 0 at 520.444909
+35 exited at 520.444909, expr : 0.682263
+520.444909 0.682263 5.780873 5.780873
+35 entered at 605.574910, expr : 0.683749
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 605.574910
+started service at 0 at 609.545596
+Finished service at 0 at 609.629976
+Entered queue 1 at 609.629976
+started service at 1 at 610.650929
+Finished service at 1 at 610.650929
+35 exited at 610.650929, expr : 0.683749
+610.650929 0.683749 4.991639 5.076019
+35 entered at 639.314660, expr : 0.781063
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 639.314660
+started service at 0 at 645.104953
+Finished service at 0 at 645.104953
+35 exited at 645.104953, expr : 0.781063
+645.104953 0.781063 5.790292 5.790292
+35 entered at 692.920312, expr : 0.812430
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 692.920312
+started service at 0 at 698.990713
+Finished service at 0 at 698.990713
+35 exited at 698.990713, expr : 0.812430
+698.990713 0.812430 6.070401 6.070401
+35 entered at 738.027744, expr : 0.884242
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 738.027744
+started service at 0 at 743.494014
+Finished service at 0 at 743.494014
+35 exited at 743.494014, expr : 0.884242
+743.494014 0.884242 5.466271 5.466271
+35 entered at 772.980187, expr : 0.917101
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 772.980187
+started service at 0 at 778.433747
+Finished service at 0 at 778.433747
+35 exited at 778.433747, expr : 0.917101
+778.433747 0.917101 5.453560 5.453560
+35 entered at 787.099719, expr : 1.013985
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 787.099719
+started service at 0 at 793.516274
+Finished service at 0 at 793.516274
+35 exited at 793.516274, expr : 1.013985
+793.516274 1.013985 6.416555 6.416555
+35 entered at 793.888828, expr : 1.025579
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 793.888828
+started service at 0 at 799.945134
+Finished service at 0 at 799.945134
+35 exited at 799.945134, expr : 1.025579
+799.945134 1.025579 6.056306 6.056306
+35 entered at 833.466172, expr : 1.117282
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 833.466172
+started service at 0 at 840.977755
+Finished service at 0 at 840.977755
+35 exited at 840.977755, expr : 1.117282
+840.977755 1.117282 7.511583 7.511583
+35 entered at 907.263975, expr : 1.119219
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 907.263975
+started service at 0 at 913.457851
+Finished service at 0 at 913.457851
+35 exited at 913.457851, expr : 1.119219
+913.457851 1.119219 6.193876 6.193876
+35 entered at 927.850670, expr : 1.194183
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 927.850670
+35 entered at 927.939214, expr : 1.264924
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 927.939214
+started service at 0 at 933.454294
+Finished service at 0 at 933.454294
+35 exited at 933.454294, expr : 1.264924
+933.454294 1.264924 5.515080 5.515080
+started service at 0 at 933.454294
+Finished service at 0 at 933.454294
+35 exited at 933.454294, expr : 1.264924
+933.454294 1.264924 11.030160 5.515080
+35 entered at 935.671030, expr : 1.339961
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+started service at 0 at 935.671030
+Finished service at 0 at 936.858488
+started service at 1 at 936.858488
+Finished service at 1 at 938.858488
+started service at 2 at 938.858488
+Finished service at 2 at 939.664793
+started service at 3 at 939.664793
+Finished service at 3 at 940.263520
+started service at 4 at 940.263520
+Finished service at 4 at 940.697997
+started service at 5 at 940.697997
+Finished service at 5 at 940.697997
+35 exited at 940.697997, expr : 1.339961
+940.697997 1.339961 0.000000 5.026968
+35 entered at 1004.951335, expr : 1.422774
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 1004.951335
+started service at 0 at 1010.692215
+Finished service at 0 at 1010.692215
+35 exited at 1010.692215, expr : 1.422774
+1010.692215 1.422774 5.740880 5.740880
+35 entered at 1025.668426, expr : 1.425644
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 1025.668426
+started service at 0 at 1034.291743
+Finished service at 0 at 1034.291743
+35 exited at 1034.291743, expr : 1.425644
+1034.291743 1.425644 8.623317 8.623317
+35 entered at 1108.377478, expr : 1.497712
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 1108.377478
+started service at 0 at 1114.656703
+Finished service at 0 at 1114.656703
+35 exited at 1114.656703, expr : 1.497712
+1114.656703 1.497712 6.279224 6.279224
+35 entered at 1143.576031, expr : 1.575928
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 1143.576031
+started service at 0 at 1149.208480
+Finished service at 0 at 1149.208480
+35 exited at 1149.208480, expr : 1.575928
+1149.208480 1.575928 5.632449 5.632449
+35 entered at 1162.733604, expr : 1.583474
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+started service at 0 at 1162.733604
+Finished service at 0 at 1163.519789
+started service at 1 at 1163.519789
+Finished service at 1 at 1165.519789
+started service at 2 at 1165.519789
+Finished service at 2 at 1165.664764
+started service at 3 at 1165.664764
+Finished service at 3 at 1166.055805
+started service at 4 at 1166.055805
+Finished service at 4 at 1166.703185
+started service at 5 at 1166.703185
+Finished service at 5 at 1166.705547
+started service at 6 at 1166.705547
+Finished service at 6 at 1167.321062
+started service at 7 at 1167.321062
+Finished service at 7 at 1167.328723
+started service at 8 at 1167.328723
+Finished service at 8 at 1168.427937
+started service at 9 at 1168.427937
+Finished service at 9 at 1168.427937
+35 exited at 1168.427937, expr : 1.583474
+1168.427937 1.583474 0.000000 5.694333
+35 entered at 1185.266281, expr : 1.655200
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 1185.266281
+started service at 0 at 1189.674394
+Finished service at 0 at 1191.244733
+Entered queue 1 at 1191.244733
+started service at 1 at 1191.513412
+Finished service at 1 at 1191.513412
+35 exited at 1191.513412, expr : 1.655200
+1191.513412 1.655200 4.676792 6.247131
+35 entered at 1236.580888, expr : 1.726987
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 1236.580888
+started service at 0 at 1242.506822
+Finished service at 0 at 1242.506822
+35 exited at 1242.506822, expr : 1.726987
+1242.506822 1.726987 5.925933 5.925933
+35 entered at 1294.769214, expr : 1.756458
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 1294.769214
+35 entered at 1294.925659, expr : 1.842652
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 1294.925659
+started service at 0 at 1298.805970
+Finished service at 0 at 1299.121641
+Entered queue 1 at 1299.121641
+started service at 1 at 1300.136379
+Finished service at 1 at 1300.136379
+35 exited at 1300.136379, expr : 1.842652
+1300.136379 1.842652 4.895049 5.210719
+started service at 0 at 1300.831762
+Finished service at 0 at 1300.831762
+35 exited at 1300.831762, expr : 1.842652
+1300.831762 1.842652 6.605170 5.906103
+35 entered at 1321.974360, expr : 1.892703
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 1321.974360
+started service at 0 at 1328.053262
+Finished service at 0 at 1328.053262
+35 exited at 1328.053262, expr : 1.892703
+1328.053262 1.892703 6.078902 6.078902
+35 entered at 1352.659646, expr : 1.935452
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 1352.659646
+started service at 0 at 1362.071762
+Finished service at 0 at 1362.071762
+35 exited at 1362.071762, expr : 1.935452
+1362.071762 1.935452 9.412116 9.412116
+35 entered at 1362.785597, expr : 1.957068
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 1362.785597
+started service at 0 at 1369.234408
+Finished service at 0 at 1369.234408
+35 exited at 1369.234408, expr : 1.957068
+1369.234408 1.957068 6.448811 6.448811
+35 entered at 1427.059459, expr : 1.998691
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 1427.059459
+started service at 0 at 1433.497221
+Finished service at 0 at 1433.497221
+35 exited at 1433.497221, expr : 1.998691
+1433.497221 1.998691 6.437761 6.437761
+35 entered at 1468.454419, expr : 2.002230
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 1468.454419
+started service at 0 at 1474.601197
+Finished service at 0 at 1474.601197
+35 exited at 1474.601197, expr : 2.002230
+1474.601197 2.002230 6.146778 6.146778
+35 entered at 1475.018834, expr : 2.051796
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 1475.018834
+started service at 0 at 1481.152667
+Finished service at 0 at 1481.152667
+35 exited at 1481.152667, expr : 2.051796
+1481.152667 2.051796 6.133833 6.133833
+35 entered at 1486.734047, expr : 2.092125
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 1486.734047
+started service at 0 at 1491.855956
+Finished service at 0 at 1491.855956
+35 exited at 1491.855956, expr : 2.092125
+1491.855956 2.092125 5.121909 5.121909
+35 entered at 1509.026849, expr : 2.186346
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 1509.026849
+started service at 0 at 1514.377697
+Finished service at 0 at 1514.377697
+35 exited at 1514.377697, expr : 2.186346
+1514.377697 2.186346 5.350849 5.350849
+35 entered at 1530.243728, expr : 2.282836
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 1530.243728
+started service at 0 at 1531.804996
+Finished service at 0 at 1532.397286
+Entered queue 1 at 1532.397286
+started service at 1 at 1535.521178
+Finished service at 1 at 1535.521178
+35 exited at 1535.521178, expr : 2.282836
+1535.521178 2.282836 4.685161 5.277450
+35 entered at 1545.793049, expr : 2.311541
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 1545.793049
+started service at 0 at 1554.039660
+Finished service at 0 at 1554.039660
+35 exited at 1554.039660, expr : 2.311541
+1554.039660 2.311541 8.246611 8.246611
+35 entered at 1560.902943, expr : 2.325087
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 1560.902943
+started service at 0 at 1563.239977
+Finished service at 0 at 1565.174191
+Entered queue 1 at 1565.174191
+started service at 1 at 1565.239977
+Finished service at 1 at 1567.239977
+started service at 2 at 1567.239977
+Finished service at 2 at 1567.239977
+35 exited at 1567.239977, expr : 2.325087
+1567.239977 2.325087 2.402821 6.337035
+35 entered at 1630.581225, expr : 2.340722
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 1630.581225
+started service at 0 at 1638.742127
+Finished service at 0 at 1638.742127
+35 exited at 1638.742127, expr : 2.340722
+1638.742127 2.340722 8.160902 8.160902
+35 entered at 1686.073956, expr : 2.347753
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 1686.073956
+started service at 0 at 1688.081606
+Finished service at 0 at 1688.445420
+Entered queue 1 at 1688.445420
+started service at 1 at 1690.514913
+Finished service at 1 at 1692.514913
+started service at 2 at 1692.514913
+Finished service at 2 at 1692.514913
+35 exited at 1692.514913, expr : 2.347753
+1692.514913 2.347753 4.077143 6.440956
+35 entered at 1717.985169, expr : 2.389531
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 1717.985169
+started service at 0 at 1724.697662
+Finished service at 0 at 1724.697662
+35 exited at 1724.697662, expr : 2.389531
+1724.697662 2.389531 6.712493 6.712493
+35 entered at 1738.875248, expr : 2.466047
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 1738.875248
+started service at 0 at 1745.486330
+Finished service at 0 at 1745.486330
+35 exited at 1745.486330, expr : 2.466047
+1745.486330 2.466047 6.611082 6.611082
+35 entered at 1788.647806, expr : 2.526938
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 1788.647806
+started service at 0 at 1796.446696
+Finished service at 0 at 1796.446696
+35 exited at 1796.446696, expr : 2.526938
+1796.446696 2.526938 7.798890 7.798890
+35 entered at 1812.148002, expr : 2.552207
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 1812.148002
+started service at 0 at 1817.161562
+Finished service at 0 at 1817.161562
+35 exited at 1817.161562, expr : 2.552207
+1817.161562 2.552207 5.013561 5.013561
+35 entered at 1818.808370, expr : 2.560335
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 1818.808370
+started service at 0 at 1825.043437
+Finished service at 0 at 1825.043437
+35 exited at 1825.043437, expr : 2.560335
+1825.043437 2.560335 6.235067 6.235067
+35 entered at 1832.697845, expr : 2.647575
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 1832.697845
+started service at 0 at 1838.106301
+Finished service at 0 at 1838.106301
+35 exited at 1838.106301, expr : 2.647575
+1838.106301 2.647575 5.408455 5.408455
+35 entered at 1902.827555, expr : 2.705038
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 1902.827555
+started service at 0 at 1910.498363
+Finished service at 0 at 1910.498363
+35 exited at 1910.498363, expr : 2.705038
+1910.498363 2.705038 7.670808 7.670808
+35 entered at 1910.796062, expr : 2.783129
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 1910.796062
+started service at 0 at 1916.379970
+Finished service at 0 at 1916.379970
+35 exited at 1916.379970, expr : 2.783129
+1916.379970 2.783129 5.583908 5.583908
+35 entered at 1917.009570, expr : 2.859835
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 1917.009570
+started service at 0 at 1919.977963
+Finished service at 0 at 1921.354806
+Entered queue 1 at 1921.354806
+started service at 1 at 1922.800230
+Finished service at 1 at 1922.800230
+35 exited at 1922.800230, expr : 2.859835
+1922.800230 2.859835 4.413816 5.790660
+35 entered at 1974.612262, expr : 2.864290
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 1974.612262
+35 entered at 1975.021691, expr : 2.879656
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 1975.021691
+started service at 0 at 1980.422625
+Finished service at 0 at 1980.422625
+35 exited at 1980.422625, expr : 2.879656
+1980.422625 2.879656 5.400935 5.400935
+started service at 0 at 1980.422625
+Finished service at 0 at 1980.422625
+35 exited at 1980.422625, expr : 2.879656
+1980.422625 2.879656 10.801870 5.400935
+35 entered at 1980.734305, expr : 2.941437
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 1980.734305
+started service at 0 at 1985.952678
+Finished service at 0 at 1985.952678
+35 exited at 1985.952678, expr : 2.941437
+1985.952678 2.941437 5.218373 5.218373
+35 entered at 1994.084616, expr : 2.999946
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 1994.084616
+started service at 0 at 2003.004640
+Finished service at 0 at 2003.004640
+35 exited at 2003.004640, expr : 2.999946
+2003.004640 2.999946 8.920024 8.920024
+35 entered at 2082.090358, expr : 3.008304
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 2082.090358
+35 entered at 2082.166553, expr : 3.058440
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 2082.166553
+started service at 0 at 2087.162130
+Finished service at 0 at 2087.225648
+Entered queue 1 at 2087.225648
+started service at 0 at 2087.225648
+Finished service at 0 at 2087.225648
+35 exited at 2087.225648, expr : 3.058440
+2087.225648 3.058440 4.995578 5.059096
+started service at 1 at 2087.783080
+Finished service at 1 at 2087.783080
+35 exited at 2087.783080, expr : 3.058440
+2087.783080 3.058440 5.553009 5.616527
+35 entered at 2088.302151, expr : 3.080930
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 2088.302151
+35 entered at 2088.503305, expr : 3.156747
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 2088.503305
+started service at 0 at 2092.009160
+Finished service at 0 at 2093.407043
+Entered queue 1 at 2093.407043
+started service at 0 at 2093.547196
+Finished service at 0 at 2093.547196
+35 exited at 2093.547196, expr : 3.156747
+2093.547196 3.156747 3.646008 5.043892
+started service at 1 at 2094.009160
+Finished service at 1 at 2094.009160
+35 exited at 2094.009160, expr : 3.156747
+2094.009160 3.156747 4.248124 5.505855
+35 entered at 2118.507517, expr : 3.254038
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 2118.507517
+started service at 0 at 2124.046167
+Finished service at 0 at 2124.046167
+35 exited at 2124.046167, expr : 3.254038
+2124.046167 3.254038 5.538649 5.538649
+35 entered at 2124.925513, expr : 3.336546
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 2124.925513
+started service at 0 at 2131.143472
+Finished service at 0 at 2131.143472
+35 exited at 2131.143472, expr : 3.336546
+2131.143472 3.336546 6.217959 6.217959
+35 entered at 2146.296540, expr : 3.422744
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 2146.296540
+started service at 0 at 2152.411456
+Finished service at 0 at 2152.411456
+35 exited at 2152.411456, expr : 3.422744
+2152.411456 3.422744 6.114917 6.114917
+35 entered at 2152.867029, expr : 3.513696
+[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+Entered queue 0 at 2152.867029
+started service at 0 at 2158.278707
+Finished service at 0 at 2158.278707
+35 exited at 2158.278707, expr : 3.513696
+2158.278707 3.513696 5.411678 5.411678
